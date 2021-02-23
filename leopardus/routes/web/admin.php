@@ -129,7 +129,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'licencia', 'guest']
         Route::get('/', 'WalletController@index')->name('wallet-index');
         Route::get('/tantechcoins', 'WalletController@indexTantech')->name('wallet-index');
         Route::get('/tantechcoinspersonal', 'WalletController@indexTantechPersonal')->name('wallet-index');
-        Route::get('/puntos', 'WalletController@indexPuntos')->name('wallet-index');
+        Route::get('/puntos', 'WalletController@indexPuntos')->name('wallet-index-puntos');
         Route::post('/transferencia', 'WalletController@transferencia')->name('wallet-transferencia');
         Route::get('/obtenermetodo/{id}', 'WalletController@datosMetodo')->name('wallet-metodo');
         Route::post('/retiro', 'WalletController@retiro')->name('wallet-retiro');
