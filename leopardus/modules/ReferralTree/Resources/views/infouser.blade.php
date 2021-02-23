@@ -15,6 +15,9 @@
                             <strong>Usuario:</strong> {{$data->fullname}} 
                         </h6>
                         <h6 class="text-white">
+                            <strong>Email:</strong> {{$data->user_email}}
+                        </h6>
+                        <h6 class="text-white">
                             <strong>Fecha Ingreso:</strong> {{date('d-m-Y', strtotime($data->created_at))}}
                         </h6>
                         <h4 class="mt-2 text-white">
