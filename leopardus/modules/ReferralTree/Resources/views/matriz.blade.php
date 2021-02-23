@@ -9,9 +9,9 @@
 		padding: 3px 3px;
 	}
 
-	/* li {
+	li {
 		position: relative;
-	} */
+	}
 
 	li img:hover+.inforuser {
 		transform: translateY(-100px);
@@ -29,8 +29,8 @@
 
 	.inforuser {
 		width: 300px;
-		position: fixed;
-		top: 50%;
+		position: absolute;
+		/* top: 0; */
 		/* left: 0; */
 		/* margin: 0; */
 		z-index: 9996;
@@ -61,6 +61,10 @@
 		transition: all 0.5s;
 		-webkit-transition: all 0.5s;
 		-moz-transition: all 0.5s;
+	}
+
+	.padre > ul{
+		/* overflow-x: auto; */
 	}
 
 	.padre ul ul {
@@ -184,26 +188,9 @@ right connector from last child*/
 	}
 </style>
 
-
-@if (Auth::user()->ID == 1)
-<div class="card">
-	<div class="card-content">
-		<div class="card-body">
-			<div class="row">
-				<div class="col-12 col-sm-6 col-md-10">
-					<label class="control-label " style="text-align: center; margin-top:4px;">ID Usuario</label>
-					<input class="form-control form-control-solid placeholder-no-fix" type="number" autocomplete="off"
-						name="iduser" id="iduser" required style="background-color:f7f7f7;" />
-				</div>
-				<div class="col-12 text-center col-md-2" style="padding-left: 10px;">
-					<button class="btn btn-primary mt-2" type="submit" onclick="buscar('{{$type}}')">Buscar</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-@endif
-
+{{-- formulario de fecha  --}}
+{{-- @include('dashboard.componentView.formSearchSimple', ['route' => 'moretree', 'name1' => 'id', 'type' => 'number',
+'text' => 'ID del Usuario']) --}}
 
 @if (Session::has('msj2'))
 <div class="col-md-12">
@@ -214,113 +201,112 @@ right connector from last child*/
 		</span>
 	</div>
 </div>
+<hr>
+
 @endif
 
 <div class="col-12 text-center">
-	<div class="card-header">
-		<span class="border border-dark p-1 float-left">Puntos Izquierdos: <strong>{{$base->puntosizq}}</strong></span>
-		<span class="border border-dark p-1 float-right">Puntos Derechos: <strong>{{$base->puntosder}}</strong></span>
-	</div>
-	<div class="padre tree">
-		<ul>
-			<li>
-				<img title="{{ ucwords($base->display_name) }}" src="{{ $base->avatar }}"
-					style="width:100px; height: 100px">
-				{{-- Nivel 1 --}}
+	<div class="card mt-5">
+		<div class="card-header">
+			<span class="border border-dark p-1 float-left">Puntos Izquierdos: <strong>{{$base->puntosizq}}</strong></span>
+			<span class="border border-dark p-1 float-right">Puntos Derechos: <strong>{{$base->puntosder}}</strong></span>
+		</div>
+		<div class="card-body">
+			<div class="padre tree">
 				<ul>
-					@foreach ($trees as $child)
 					<li>
-						@include('referraltree::infouser', ['data' => $child])
-						{{-- Nivel 2 --}}
-						@if (!empty($child->children))
+						<img title="{{ ucwords($base->display_name) }}" src="{{ $base->avatar }}" style="width:100px; height:100px;">
+						{{-- Nivel 1 --}}
 						<ul>
-							@foreach ($child->children as $child2)
+							@foreach ($trees as $child)
+							{{-- lado Derecho --}}
+							@include('referraltree::sideempty', ['side' => 'D'])
 							<li>
-								@include('referraltree::infouser', ['data' => $child2])
-							</li>
-							@endforeach
-							@if (count($child->children) < 2) @if (count($child->children) == 2)
-								<li>
-									<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-								</li>
+								@include('referraltree::infouser', ['data' => $child])
+								{{-- nivel 2 --}}
+								@if (!empty($child->children))
+								<ul>
+									@foreach ($child->children as $child2)
+									{{-- lado Derecho --}}
+									@include('referraltree::sideempty', ['side' => 'D'])
+									<li>
+										
+										@include('referraltree::infouser', ['data' => $child2])
+										{{-- nivel 3 --}}
+										@if (!empty($child2->children))
+										<ul>
+											@foreach ($child2->children as $child3)
+											{{-- lado Derecho --}}
+											@include('referraltree::sideempty', ['side' => 'D'])
+											<li>
+												@include('referraltree::infouser', ['data' => $child3])
+												{{-- nivel 4
+												@if (!empty($child3->children))
+												<ul>
+													@foreach ($child3->children as $child4)
+													lado Derecho
+													@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($child3->children)])
+													<li>
+														@include('referraltree::infouser', ['data' => $child4])
+		
+														@if (!empty($child4->children))
+														nivel 5
+														<ul>
+															@foreach ($child4->children as $child5)
+															lado Derecho
+															@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($child4->children)])
+															<li>
+																@include('referraltree::infouser', ['data' => $child5])
+															</li>
+															lado Izquierdo
+															@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($child4->children)])
+															@endforeach
+														</ul>
+														fin nivel 5
+														@endif
+													</li>
+													lado Izquierdo
+													@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($child3->children)])
+													@endforeach
+												</ul>
+												@endif
+												fin nivel 4 --}}
+											</li>
+											{{-- lado Izquierdo --}}
+											@include('referraltree::sideempty', ['side' => 'I'])
+											@endforeach
+										</ul>
+										@endif
+										{{-- fin nivel 3 --}}
+									</li>
+									{{-- lado Izquierdo --}}
+									@include('referraltree::sideempty', ['side' => 'I'])
+									@endforeach
+								</ul>
 								@endif
-								@if (count($child->children) == 1)
-								@for ($i = 1; $i < 2; $i++) <li>
-									<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-					</li>
-					@endfor
-					@endif
-					@if (count($child->children) == 0)
-					@for ($i = 1; $i < 3; $i++) <li>
-						<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-			</li>
-			@endfor
-			@endif
-			@endif
-		</ul>
-		@endif
-		{{-- Fin nivel 2 --}}
-		</li>
-		@endforeach
-		@if (count($trees) < 2) @if (count($trees)==2) <li>
-			<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-			<ul>
-				@for ($o = 1; $o < 3; $o++) <li>
-					<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-					</li>
-					@endfor
-			</ul>
-			</li>
-			@endif
-			@if (count($trees) == 1)
-			@for ($i = 1; $i < 2; $i++) <li>
-				<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-				<ul>
-					@for ($o = 1; $o < 3; $o++) <li>
-						<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-						</li>
-						@endfor
-				</ul>
-				</li>
-				@endfor
-				@endif
-				{{-- @if (count($trees) == 0)
-				@for ($i = 1; $i < 4; $i++) <li>
-					<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
-					<ul>
-						@for ($o = 1; $o < 4; $o++) <li>
-							<img src="https://brainbow.capital/assets/newuser.png" style="width:64px">
+								{{-- fin nivel 2 --}}
 							</li>
-							@endfor
-					</ul>
+							{{-- lado Izquierdo --}}
+							@include('referraltree::sideempty', ['side' => 'I'])
+							@endforeach
+						</ul>
+						{{-- fin nivel 1 --}}
 					</li>
-					@endfor
-					@endif --}}
-					@endif
-					</ul>
-					{{-- fin nivel 1 --}}
-					</li>
-					</ul>
+				</ul>
+			</div>
+			@if (Auth::id() != $base->ID)
+			<div class="col-12 text-center">
+				<a class="btn btn-info" href="{{route('referraltree', strtolower($type))}}">Regresar a mi arbol</a>
+			</div>
+			@endif
+		</div>
 	</div>
-	@if (Auth::id() != $base->ID)
-	<div class="col-12 text-center">
-		<a class="btn btn-info" href="{{route('referraltree', strtolower($type))}}">Regresar a mi arbol</a>
-	</div>
-	@endif
 </div>
 
 <script>
 	function nuevoreferido(id, type) {
 		let ruta = "{{url('mioficina/referraltree')}}/" + type + '/' + id
 		window.location.href = ruta
-	}
-	function buscar(type) {
-		let iduser = $('#iduser').val()
-		if (iduser != '') {
-			nuevoreferido(btoa(iduser), type)
-		}else{
-			alert('Rellene el campo de id de usuario')
-		}
 	}
 </script>
 @endsection
