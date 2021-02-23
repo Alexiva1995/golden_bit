@@ -31,6 +31,7 @@ class ReferralTreeController extends Controller
         $trees = $funcione->getDataEstructura(Auth::id(), $type);
         // $type = ucfirst($type);
         $base = Auth::user();
+        $base->children = User::where('position_id', '=', $base->ID)->get();
         $base->avatar = asset('avatar/'.$base->avatar);
         return view('referraltree::matriz')->with(compact('base', 'trees', 'type'));
         // return view('genealogy.tree', compact('trees', 'base'));
@@ -56,6 +57,7 @@ class ReferralTreeController extends Controller
         if (empty($base)) {
             return redirect()->back()->with('msj2', 'El ID '. $id.', no se encuentra registrado');
         }
+        $base->children = User::where('position_id', '=', $base->ID)->get();
         $base->avatar = asset('avatar/'.$base->avatar);
         return view('referraltree::matriz')->with(compact('base', 'trees', 'type'));
     }
