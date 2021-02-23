@@ -83,7 +83,7 @@ if ($fecha->dayOfWeek >= 1 && $fecha->dayOfWeek <= 2) { $activo=true; }
     </div>
 </div>
 
-@include('wallet/componentes/formRetiro', ['disponible' => Auth::user()->wallet_amount, 'tipowallet' => 1])
-@include('wallet/componentes/formTransferencia')
+{{-- @include('wallet/componentes/formRetiro', ['disponible' => Auth::user()->wallet_amount, 'tipowallet' => 1])
+@include('wallet/componentes/formTransferencia') --}}
 
 @endsection
