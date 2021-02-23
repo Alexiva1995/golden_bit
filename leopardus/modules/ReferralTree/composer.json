@@ -1,0 +1,15 @@
+{
+    "name": "GALEJ/referraltree",
+    "description": "",
+    "authors": [
+        {
+            "name": "Williams Pérez - Galej, C.A.",
+            "email": "alejandro@galej.net"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\ReferralTree\\": ""
+        }
+    }
+}
