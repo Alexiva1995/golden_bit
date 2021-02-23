@@ -30,12 +30,6 @@
             </li>
             {{-- FIN INVERSIONES --}}
             {{-- INICIO BOT BRAINBOW --}}
-            <li class="nav-item">
-                <a href="{{route('wallet-index')}}" class="nav-link text-white">
-                    <i class="feather icon-bar-chart"></i>
-                    <span class="title">Inversiones</span>
-                </a>
-            </li>
             {{-- FIN BOT BRAINBOW--}}
             {{-- INICIO DE ORDENES --}}
             <li class="nav-item">

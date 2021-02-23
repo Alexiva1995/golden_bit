@@ -45,14 +45,22 @@
                 </ul>
             </li>
             {{--FIN RANKING --}}
-            {{-- INICIO Liquidar --}}
+            {{-- INICIO LIQUIDAR --}}
             <li>
                 <a href="{{route('liquidacion.user.comision')}}" class="nav-link text-white nav-toggle">
                     <i class="feather icon-activity"></i>
                     <span class="title">Liquidar</span>
                 </a>
             </li>
-            {{-- FIN Liquidar --}}
+            {{-- FIN LIQUIDAR --}}
+            {{-- INICIO WALLET --}}
+            <li class="nav-item">
+                <a href="{{route('wallet-index')}}" class="nav-link text-white">
+                    <i class="feather icon-bar-chart"></i>
+                    <span class="title">Wallet</span>
+                </a>
+            </li>
+            {{-- FIN WALLET --}}
             {{-- INICIO DE ORDENES --}}
             <li class="nav-item">
                 <a href="javascript:;" class="nav-link text-white nav-toggle">
