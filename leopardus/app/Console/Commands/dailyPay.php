@@ -41,7 +41,8 @@ class dailyPay extends Command
     {
         $comision = new ComisionesController();
         $comision->bonoDirecto();
-        
         $this->info('Bonos pagados '. Carbon::now()); 
+        $comision->pointsBinary();
+        $this->info('Puntos pagados '. Carbon::now()); 
     }
 }
