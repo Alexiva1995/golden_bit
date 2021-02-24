@@ -92,7 +92,7 @@ class IndexController extends Controller
     private function getData($id, $nivel, $typeTree) : object
     {
         $rango = new RangoController();
-        $resul = User::where($typeTree, '=', $id)->get();
+        $resul = User::where($typeTree, '=', $id)->orderBy('ladomatrix', 'desc')->get();
         foreach ($resul as $user) {
             $patrocinado = User::find($user->referred_id);
             $avatarTree = asset('avatar/'.$user->avatar);

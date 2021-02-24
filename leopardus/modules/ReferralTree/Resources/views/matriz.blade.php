@@ -239,7 +239,7 @@ right connector from last child*/
 						<ul>
 							@foreach ($trees as $child)
 							{{-- lado Derecho --}}
-							@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($base->children)])
+							@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($base->children),'ladouser' => $child->ladomatriz])
 							<li>
 								@include('referraltree::infouser', ['data' => $child])
 								{{-- nivel 2 --}}
@@ -247,7 +247,7 @@ right connector from last child*/
 								<ul>
 									@foreach ($child->children as $child2)
 									{{-- lado Derecho --}}
-									@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($child->children)])
+									@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($child->children),'ladouser' => $child2->ladomatriz])
 									<li>
 										
 										@include('referraltree::infouser', ['data' => $child2])
@@ -256,7 +256,7 @@ right connector from last child*/
 										<ul>
 											@foreach ($child2->children as $child3)
 											{{-- lado Derecho --}}
-											@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($child2->children)])
+											@include('referraltree::sideempty', ['side' => 'D', 'cant' => count($child2->children),'ladouser' => $child3->ladomatriz])
 											<li>
 												@include('referraltree::infouser', ['data' => $child3])
 												{{-- nivel 4
@@ -292,21 +292,21 @@ right connector from last child*/
 												fin nivel 4 --}}
 											</li>
 											{{-- lado Izquierdo --}}
-											@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($child2->children)])
+											@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($child2->children), 'ladouser' => $child3->ladomatriz])
 											@endforeach
 										</ul>
 										@endif
 										{{-- fin nivel 3 --}}
 									</li>
 									{{-- lado Izquierdo --}}
-									@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($child->children)])
+									@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($child->children), 'ladouser' => $child2->ladomatriz])
 									@endforeach
 								</ul>
 								@endif
 								{{-- fin nivel 2 --}}
 							</li>
 							{{-- lado Izquierdo --}}
-							@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($base->children)])
+							@include('referraltree::sideempty', ['side' => 'I', 'cant' => count($base->children), 'ladouser' => $child->ladomatriz])
 							@endforeach
 						</ul>
 						{{-- fin nivel 1 --}}
