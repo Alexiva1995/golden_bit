@@ -18,6 +18,7 @@
                     {{ csrf_field() }}
                     <input type="hidden" name="iduser" id="iduser" value="{{Auth::user()->ID}}">
                     <input type="hidden" name="action" id="action">
+                    <input type="hidden" name="wallet" id="wallet">
                     <table id="mytable2" class="table zero-configuration" style="width: 100%">
                         <thead>
                             <tr class="text-center">
@@ -44,7 +45,7 @@
                         </tfoot>
                     </table>
                     <div class="form-group mt-2 text-center">
-                        <button type="button" onclick="procesar('liquidar')" class="btn btn-info">Procesar Comisiones</button>
+                        <button type="button" onclick="revisar()" class="btn btn-info">Procesar Comisiones</button>
                         <button type="button" onclick="procesar('rechazar')" class="btn btn-danger">Rechazar Comisiones</button>
                     </div>
                 </form>
@@ -52,6 +53,8 @@
         </div>
     </div>
 </div>
+
+@include('liquidation.componentes.modalComision')
 
 <script>
     function detalles() {
@@ -74,7 +77,7 @@
                         '<td>' + element.concepto + '</td>' +
                         '<td>' + element.idreferido + '</td>' +
                         '<td>' + element.referido + '</td>' +
-                        '<td> $ ' + element.total2 + '</td>' +
+                        '<td> $ ' + element.total2 + '<input type="hidden" id="'+ element.id +'" class="" value="' + element.total2 + '"> </td>' +
                         '</tr>')
                 });
                 $('#mytable2').DataTable({
@@ -94,11 +97,34 @@
         detalles()
     }, 1500);
 
+    function revisar() {
+        let totalS = 0;
+        let totalR = 0;
+        let feed = 0;
+        let comisiones = $('.listuser2')
+        for (let element of comisiones) {
+            if (element.checked) {
+                totalS = (totalS + parseFloat($('#'+element.value).val()))
+            }
+        }
+
+        feed = (totalS * 0.10);
+        totalR = (totalS - feed)
+
+        $('#ts').html(totalS)
+        $('#feed').html(feed)
+        $('#tr').html(totalR)
+        $('#modalComision').modal('show')
+    }
+
     function procesar(accion) {
         $('#action').val(accion)
         $('#form_comisiones').submit()
     }
 
+    function wallet(billetera) {
+        $('#wallet').val(billetera)
+    }
 
     function selectAllComisiones() {
         $('.listuser2').attr('checked', true)

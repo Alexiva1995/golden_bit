@@ -103,14 +103,14 @@
                     <span class="arrow"></span>
                 </a>
                 <ul class="sub-menu" style="background-color: #1b1b1b;">
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a href="{{route('liquidacion')}}" class="nav-link text-white">
                             <span class="menu-title" data-i18n="Historial de Ordenes">
                                 <i class="feather icon-circle"></i>
                                 Liquidaciones
                             </span>
                         </a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item">
                         <a href="{{route('liquidacion.pendientes')}}" class="nav-link text-white">
                             <span class="menu-title" data-i18n="Historial de Ordenes">

@@ -203,13 +203,14 @@ class LiquidationController extends Controller
      */
     public function procesarComisiones(Request $request)
     {
+        $validate = $request->validate([
+            'listcomisiones' => ['required'],
+            'wallet' => ['required']
+        ]);
         try {
-            $validate = $request->validate([
-                'listcomisiones' => ['required']
-            ]);
             if ($validate) {
                 if ($request->action == 'liquidar') {
-                    $estado = $this->generanLiquidacion($request->iduser, $request->listcomisiones);
+                    $estado = $this->generanLiquidacion($request->iduser, $request->listcomisiones, $request->wallet);
                     $status = 'Liquidacion Procesadas';
                     if ($estado == 0) {
                         $status = 'El limite permitido es 50$';
@@ -263,9 +264,10 @@ class LiquidationController extends Controller
      *
      * @param integer $iduser
      * @param array $comisiones
+     * @param string $billetera
      * @return int
      */
-    public function generanLiquidacion($iduser, $comisionesList): int
+    public function generanLiquidacion($iduser, $comisionesList, $billetera): int
     {
         $noprocesa = 0;
         $comisiones = $this->getComisiones($iduser, 0);
@@ -291,13 +293,13 @@ class LiquidationController extends Controller
 
 
         
-        $wallet = DB::table('user_campo')->where('ID', '=', $iduser)->select('paypal')->first();
+        // $wallet = DB::table('user_campo')->where('ID', '=', $iduser)->select('paypal')->first();
         $feed = ($totalLiquidation * 0.1);
         $totalPagar = ($totalLiquidation - $feed);
         $data = [
             'iduser' => $iduser,
             'total' => $totalPagar,
-            'wallet_used' => $wallet->paypal,
+            'wallet_used' => $billetera,
             'process_date' => Carbon::now(),
             'status' => 0,
             'type_liquidation' => 'Comisiones',
