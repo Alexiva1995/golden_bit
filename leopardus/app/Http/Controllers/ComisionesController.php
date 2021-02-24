@@ -348,6 +348,10 @@ class ComisionesController extends Controller
             ['status', '=', 1],
         ])->get()->max('invertido');
 
+        if ($max == null) {
+            $max = 0;
+        }
+
         return $max;
     }
 
@@ -361,7 +365,7 @@ class ComisionesController extends Controller
         try {
             $ordenes = $this->getInversionesBonos();
             foreach ($ordenes as $orden) {
-                $sponsors = $this->indexController->getSponsor($orden->iduser, [], 1, 'ID', 'position_id');
+                $sponsors = $this->indexController->getSponsor($orden->iduser, [], 0, 'ID', 'position_id');
                 $referido = User::find($orden->iduser);
                 $side = $referido->ladomatrix;
                 foreach ($sponsors as $sponsor) {
@@ -376,10 +380,6 @@ class ComisionesController extends Controller
                                     $pointI = $orden->invertido;
                                 }
                                 
-                                $user = User::find($sponsor->ID);
-                                $user->puntosizq = $pointI;
-                                $user->puntosder = $pointD;
-                                $user->save();
                                 $concepto = 'Puntos Binarios del usuario '.$referido->display_name.' - de la inversion '.$orden->id;
                                 $dataPoint = [
                                     'iduser' => $sponsor->ID,
@@ -452,7 +452,18 @@ class ComisionesController extends Controller
      */
     public function savePoints($data)
     {
-        DB::table('wallet_point')->insert($data);
+        $verificar = DB::table('wallet_point')->where([
+            ['iduser', '=', $data['iduser']],
+            ['idcompra', '=', $data['idcompra']],
+            ['idreferido', '=',  $data['idreferido']],
+        ])->first();
+        if ($verificar == null) {
+            $user = User::find($data['iduser']);
+            $user->puntosizq = ($user->puntosizq + $data['point_left']);
+            $user->puntosder = ($user->puntosder + $data['point_right']);
+            $user->save();
+            DB::table('wallet_point')->insert($data);
+        }
     }
 
 }

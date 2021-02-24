@@ -325,8 +325,7 @@ right connector from last child*/
 <script>
 	function nuevoreferido(id, type) {
 		let ruta = "{{url('mioficina/referraltree')}}/" + type + '/' + id
-		w
-		indow.location.href = ruta
+		window.location.href = ruta
 	}
 
 	function buscar(type) {

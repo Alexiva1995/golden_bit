@@ -46,6 +46,7 @@ class AdminController extends Controller
     public function index()
     {
         try {
+            // $this->comisionController->bonoBinario();
             $inversiones = $this->indexController->getInversionesUserDashboard(Auth::user()->ID);
             $paquete = $this->activacionController->verificarPaquete(Auth::user()->ID);
 
