@@ -41,8 +41,6 @@ class WalletController extends Controller
 		$moneda = Monedas::where('principal', 1)->get()->first();
 		$metodopagos = MetodoPago::all();
 		$comisiones = SettingsComision::select('comisionretiro', 'comisiontransf')->where('id', 1)->get();
-		$funciones = new ComisionesController;
-		$funciones->ObtenerUsuarios();
 		$cuentawallet = '';
 		$pagosPendientes = false;
 		$validarPagos = Pagos::where([
