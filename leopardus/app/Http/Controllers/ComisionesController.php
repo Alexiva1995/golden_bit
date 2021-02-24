@@ -142,23 +142,6 @@ class ComisionesController extends Controller
     }
 
     /**
-     * Permite obtener la informacion para la barra de progreso
-     *
-     * @param integer $iduser
-     * @return array
-     */
-    public function getBarraRentabilidad(int $iduser): array
-    {
-        $data = [
-            'maximo' => 0,
-            'progreso' => 0,
-            'progre_porc' => 0
-        ];
-
-        return $data;
-    }
-
-    /**
      * Permite pagar el bono de rentabilidad
      *
      * @return void
@@ -226,10 +209,12 @@ class ComisionesController extends Controller
                 'ganado' => $tmpganado,
                 'balance' => $tmpganado,
                 'progreso' => $progreso,
-                'fecha_fin' => Carbon::now()->addYear()->format('Y-m-d')
             ];
+
             if ($progreso == 100) {
-                $dataRent['fecha_fin'] = $fecha;
+                OrdenInversion::where('id', $idcompra)->update(['fecha_fin' => $fecha]);
+            }else{
+                OrdenInversion::where('id', $idcompra)->update(['fecha_fin' => Carbon::now()->addYear()->format('Y-m-d')]);
             }
             
             $dataPay = [

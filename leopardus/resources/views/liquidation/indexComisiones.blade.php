@@ -16,7 +16,7 @@
                 <input type="hidden" id="url" value="{{Route('liquidacion.detalles', Auth::user()->ID)}}">
                 <form action="{{route('liquidacion.procesar.comision')}}" method="post" id="form_comisiones">
                     {{ csrf_field() }}
-                    <input type="hidden" name="iduser" id="iduser">
+                    <input type="hidden" name="iduser" id="iduser" value="{{Auth::user()->ID}}">
                     <input type="hidden" name="action" id="action">
                     <table id="mytable2" class="table zero-configuration" style="width: 100%">
                         <thead>
@@ -60,8 +60,8 @@
             if (response != null) {
                 let data = JSON.parse(response)
                 $('#listComision').empty()
-                $('#mytable2').DataTable().clear();
-                $('#mytable2').DataTable().destroy();
+                // $('#mytable2').DataTable().clear();
+                // $('#mytable2').DataTable().destroy();
                 data.comisiones.forEach(element => {
                     $('#listComision').append('<tr class="text-center">' +
 
@@ -83,7 +83,7 @@
                 });
                 $('#modaDetallesComision').html('Comisiones Pendiente del usuario ' + data.usuario)
                 $('#totalComision').html('$ ' + data.totalPagar)
-                $('#iduser').val(iduser)
+                
             }
             // $('#modalDetalles').modal('show')
         })

@@ -191,7 +191,7 @@ class LiquidationController extends Controller
             foreach ($request->listuser as $user) {
                 $this->generanLiquidacion($user, []);
             }
-            return redirect()->route('liquidacion')->with('msj', 'Liquidaciones Procesadas');
+            return redirect()->route('liquidacion')->with('msj', 'Liquidaciones Procesadas, salvo las que estan por debajo de 50$');
         }
     }
 
@@ -203,17 +203,25 @@ class LiquidationController extends Controller
      */
     public function procesarComisiones(Request $request)
     {
-        $validate = $request->validate([
-            'listcomisiones' => ['required']
-        ]);
-        if ($validate) {
-            if ($request->action == 'liquidar') {
-                $this->generanLiquidacion($request->iduser, $request->listcomisiones);
-                return redirect()->route('liquidacion')->with('msj', 'Liquidacion Procesadas');
-            }elseif($request->action == 'rechazar'){
-                $this->rechazarComisiones($request->listcomisiones, $request->iduser);
-                return redirect()->route('liquidacion')->with('msj', 'Comisiones Rechazadas');
+        try {
+            $validate = $request->validate([
+                'listcomisiones' => ['required']
+            ]);
+            if ($validate) {
+                if ($request->action == 'liquidar') {
+                    $estado = $this->generanLiquidacion($request->iduser, $request->listcomisiones);
+                    $status = 'Liquidacion Procesadas';
+                    if ($estado == 0) {
+                        $status = 'El limite permitido es 50$';
+                    }
+                    return redirect()->back()->with('msj', $status);
+                }elseif($request->action == 'rechazar'){
+                    $this->rechazarComisiones($request->listcomisiones, $request->iduser);
+                    return redirect()->back()->with('msj', 'Comisiones Rechazadas');
+                }
             }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('msj', 'Ocurrio un error, por favor contacte con el administrador');
         }
     }
 
@@ -255,10 +263,11 @@ class LiquidationController extends Controller
      *
      * @param integer $iduser
      * @param array $comisiones
-     * @return void
+     * @return int
      */
-    public function generanLiquidacion($iduser, $comisionesList)
+    public function generanLiquidacion($iduser, $comisionesList): int
     {
+        $noprocesa = 0;
         $comisiones = $this->getComisiones($iduser, 0);
         $comisionesProcesar = [];
         $totalLiquidation = 0;
@@ -273,6 +282,14 @@ class LiquidationController extends Controller
                 $totalLiquidation = ($totalLiquidation + $comision->total);
             }
         }
+
+        if ($totalLiquidation < 50) {
+            return $noprocesa;
+        }else{
+            $noprocesa = 1;
+        }
+
+
         
         $wallet = DB::table('user_campo')->where('ID', '=', $iduser)->select('paypal')->first();
         $feed = ($totalLiquidation * 0.1);
@@ -311,6 +328,7 @@ class LiquidationController extends Controller
         foreach ($comisionesProcesar as $comision) {
             Commission::where('id', $comision->id)->update(['status' => 1, 'id_liquidacion' => $idLiquidacion]);
         }
+        return $noprocesa;
     }
 
     /**
@@ -427,27 +445,27 @@ class LiquidationController extends Controller
             $liquidacion = Liquidacion::find($data->liquidacion);
             $liquidacion->comment = $data->comentario;
             $liquidacion->status = 1;
-            $valor = $this->getRateBtc();
-            if ($valor != 0) {
-                $cmd = 'create_withdrawal';
-                $dataPago = [
-                    'amount' => ($liquidacion->total * $valor),
-                    'currency' => 'BTC',
-                    'address' => $liquidacion->wallet_used,
-                ];
-                // llamo la a la funcion que va a ser la transacion
-                $result = $this->coinpayments_api_call($cmd, $dataPago);
-                if (!empty($result['result'])) {
+            // $valor = $this->getRateBtc();
+            // if ($valor != 0) {
+            //     $cmd = 'create_withdrawal';
+            //     $dataPago = [
+            //         'amount' => ($liquidacion->total * $valor),
+            //         'currency' => 'BTC',
+            //         'address' => $liquidacion->wallet_used,
+            //     ];
+            //     // llamo la a la funcion que va a ser la transacion
+            //     $result = $this->coinpayments_api_call($cmd, $dataPago);
+            //     if (!empty($result['result'])) {
                     $estado = 'Se aprobo con exito la liquidacion '.$liquidacion->id;
-                    $liquidacion->hash = $result['result']['id'];
-                    $this->bonoRetiro($liquidacion->iduser, $valor);
+                    $liquidacion->hash = $data->hash;
+                    $this->bonoRetiro($liquidacion->iduser, $liquidacion->total);
                     $liquidacion->save();
-                }else{
-                    $estado = "Hubo un error al momento de procesar el retiro";
-                }
-            }else{
-                $estado = "Hubo un error al momento de obtener el valor del btc";
-            }
+            //     }else{
+            //         $estado = "Hubo un error al momento de procesar el retiro";
+            //     }
+            // }else{
+            //     $estado = "Hubo un error al momento de obtener el valor del btc";
+            // }
             return $estado;
         } catch (\Throwable $th) {
             dd($th);
@@ -474,9 +492,9 @@ class LiquidationController extends Controller
             if ($paquete != null) {
                 if ($paquete->code == 1) {
                     $pagar = ($monto * 0.02);
-                    $idcompra = $iduser.Carbon::now()->format('Ymd');
+                    $idcompra = $iduser.Carbon::now()->format('Ymds');
                     $concepto = 'Bono de Retiro por usuario '.$referido->Display_name;
-                    $comisiones->saveComision($iduser, $idcompra, $pagar, $iduser, $sponsor->nivel, $concepto, 'Bono Retiro');
+                    $comisiones->saveComision($sponsor->ID, $idcompra, $pagar, $iduser, 1, $concepto, 'Bono Retiro');
                 }
             }
         }
