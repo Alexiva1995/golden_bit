@@ -104,12 +104,14 @@
         let comisiones = $('.listuser2')
         for (let element of comisiones) {
             if (element.checked) {
-                totalS = (totalS + parseFloat($('#'+element.value).val()))
+                $monto = $('#'+element.value).val().replace(',', '.')
+                totalS = (totalS + parseFloat($monto))
             }
         }
 
-        feed = (totalS * 0.10);
+        feed = (totalS * 0.10)
         totalR = (totalS - feed)
+        feed = new Intl.NumberFormat("en-IN").format((totalS * 0.10));
 
         $('#ts').html(totalS)
         $('#feed').html(feed)
