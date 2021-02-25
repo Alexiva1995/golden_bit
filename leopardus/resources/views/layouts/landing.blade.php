@@ -18,9 +18,7 @@
 
 <body style="overflow-x: hidden;">
     {{-- container --}}
-    <div class="container">
-        @yield('content')
-    </div>    
+    @yield('content')
 </body>
 
 <script src="{{asset('assets/landindasset/js/jquery.min.js')}}"></script>
