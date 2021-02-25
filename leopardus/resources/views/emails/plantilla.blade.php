@@ -4,7 +4,7 @@
 @section('content')
 
 <h3 class="card-title text-center">
-    SE HA EXTRAÍDO MÁS ORO DE LE MENTE DEL HOMBRE, QUE DE LA MISMA TIERRA. - NAPOLEON HILL
+    SE HA EXTRAÍDO MÁS ORO DE LA MENTE DEL HOMBRE, QUE DE LA MISMA TIERRA. - NAPOLEON HILL
 </h3>
 
 <h4>
@@ -12,11 +12,11 @@
 </h4>
 
 <p>
-    Querernos darte la bienvenida a este novedoso sistema , la nueva era, a la que le llamamos artificial, en la que se
+    Queremos darte la bienvenida a este novedoso sistema, la nueva era, a la que le llamamos artificial, en la que se
     requiere incrementar el nivel de información, para acelerar las posibilidades de identificar las oportunidades que
-    traen consigo los nuevos modelos de inversión más exitosos del mundo, los cuales están cambiado de manera impactante
-    la vida de muchas familias, es lo que más nos impulsa a celebrar contigo, porque inicias en este momento una etapa
-    de transformación financiera.
+    traen consigo los nuevos modelos de emprendimiento más exitosos del mundo, los cuales están cambiado de manera
+    impactante la vida de muchas familias, es lo que más nos impulsa a celebrar contigo, porque inicias en este momento
+    una etapa de transformación financiera.
 </p>
 
 <p>

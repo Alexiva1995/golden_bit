@@ -1,14 +1,28 @@
 @extends('layouts.landing')
 
 @section('content')
-{{-- @php
-    if(!request()->secure())
-    {
-        header('location: https://comunidadlevelup.com/');
-        // redirect()->secure(request()->getPathInfo(),301);
-    }
-@endphp --}}
+{{-- Navegacion --}}
+@include('landing.component.navegacion')
+{{-- Navegacion --}}
 
-@include('landing.component.faq')
-@endif
+{{-- Header --}}
+@include('landing.component.heroHeader')
+{{-- Header --}}
+
+{{-- Precios --}}
+@include('landing.component.sectionPricing')
+{{-- Precios --}}
+
+{{-- Presentacion --}}
+@include('landing.component.sectionFeature')
+{{-- Presentacion --}}
+
+{{-- Faq --}}
+@include('landing.component.sectionFaq')
+{{-- Faq --}}
+
+{{-- Footer --}}
+@include('landing.component.footer')
+{{-- Footer --}}
+
 @endsection

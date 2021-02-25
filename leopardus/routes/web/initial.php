@@ -23,7 +23,7 @@ Route::prefix('mioficina')->group(function(){
 })->name('landing');*/
 
 Route::get('/', function(){
-    return redirect()->route('login');
+    return view('landing.index');
 });
 
 Route::get('/producto/legal', function(){

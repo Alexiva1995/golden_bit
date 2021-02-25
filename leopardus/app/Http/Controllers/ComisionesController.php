@@ -100,44 +100,46 @@ class ComisionesController extends Controller
      */
     public function saveComision(int $iduser, int $idcompra, float $debito, int $idreferido, int $nivel_referido, string $concepto, string $tipo_bonus)
     {
-        $checkComision = Commission::where([
-            ['user_id', '=', $iduser],
-            ['compra_id', '=', $idcompra]
-        ])->first();
-
-        if ($checkComision == null) {
-            $user = User::find($iduser);
-            $referido = User::find($idreferido);
-            Commission::create([
-                'user_id' => $iduser,
-                'compra_id' => $idcompra,
-                'date' => Carbon::now()->format('Y-m-d'),
-                'total' => $debito,
-                'referred_email' => $referido->user_email,
-                'referred_level' => $nivel_referido,
-                'status' => 0,
-                'concepto' => $concepto,
-                'tipo_comision' => $tipo_bonus
-            ]);
-
-            $user->wallet_amount = ($user->wallet_amount + $debito);
-
-            $dataWallet = [
-                'iduser' => $iduser,
-                'usuario' => $user->display_name,
-                'correo' => $referido->user_email,
-                'descripcion' => $concepto,
-                'debito' => $debito,
-                'credito' => 0,
-                'balance' => $user->wallet_amount,
-                'descuento' => 0,
-                'tipotransacion' => 2,
-                'status' => 0
-            ];
-
-            $this->walletController->saveWallet($dataWallet);
-
-            $user->save();
+        if ($iduser != 1) {
+            $checkComision = Commission::where([
+                ['user_id', '=', $iduser],
+                ['compra_id', '=', $idcompra]
+            ])->first();
+    
+            if ($checkComision == null) {
+                $user = User::find($iduser);
+                $referido = User::find($idreferido);
+                Commission::create([
+                    'user_id' => $iduser,
+                    'compra_id' => $idcompra,
+                    'date' => Carbon::now()->format('Y-m-d'),
+                    'total' => $debito,
+                    'referred_email' => $referido->user_email,
+                    'referred_level' => $nivel_referido,
+                    'status' => 0,
+                    'concepto' => $concepto,
+                    'tipo_comision' => $tipo_bonus
+                ]);
+    
+                $user->wallet_amount = ($user->wallet_amount + $debito);
+    
+                $dataWallet = [
+                    'iduser' => $iduser,
+                    'usuario' => $user->display_name,
+                    'correo' => $referido->user_email,
+                    'descripcion' => $concepto,
+                    'debito' => $debito,
+                    'credito' => 0,
+                    'balance' => $user->wallet_amount,
+                    'descuento' => 0,
+                    'tipotransacion' => 2,
+                    'status' => 0
+                ];
+    
+                $this->walletController->saveWallet($dataWallet);
+    
+                $user->save();
+            }
         }
     }
 
@@ -149,7 +151,10 @@ class ComisionesController extends Controller
     public function pagarRentabilidad()
     {
         try {
-            $users = User::where('status', 1)->get();
+            $users = User::where([
+                ['status', '=', 1],
+                ['ID', '!=', 1]
+            ])->get();
             $arrayGold = [
                 0 => 1, 1 => 1.1, 2 => 1.2, 3 => 1.3, 4 => 1.4, 5 => 1.5
             ];
@@ -256,21 +261,23 @@ class ComisionesController extends Controller
     public function checkExictRentabilidad($iduser, $idcompra)
     {
         try {
-            $rentabilidad = DB::table('log_rentabilidad')->where([
-                ['iduser', '=', $iduser],
-                ['idcompra', '=', $idcompra],
-            ])->first();
-
-            if ($rentabilidad == null) {
-
-                $orden = OrdenInversion::where([
+            if ($iduser != 1) {
+                $rentabilidad = DB::table('log_rentabilidad')->where([
                     ['iduser', '=', $iduser],
-                    ['id', '=', $idcompra]
+                    ['idcompra', '=', $idcompra],
                 ])->first();
-        
-                $user = User::find($iduser);
-
-                $this->saveRentabilidad($iduser, $idcompra, $user->paquete, $orden->invertido);
+    
+                if ($rentabilidad == null) {
+    
+                    $orden = OrdenInversion::where([
+                        ['iduser', '=', $iduser],
+                        ['id', '=', $idcompra]
+                    ])->first();
+            
+                    $user = User::find($iduser);
+    
+                    $this->saveRentabilidad($iduser, $idcompra, $user->paquete, $orden->invertido);
+                }
             }
         } catch (\Throwable $th) {
             dd($th);
@@ -443,11 +450,13 @@ class ComisionesController extends Controller
             ['idreferido', '=',  $data['idreferido']],
         ])->first();
         if ($verificar == null) {
-            $user = User::find($data['iduser']);
-            $user->puntosizq = ($user->puntosizq + $data['point_left']);
-            $user->puntosder = ($user->puntosder + $data['point_right']);
-            $user->save();
-            DB::table('wallet_point')->insert($data);
+            if ($data['iduser'] != 1) {
+                $user = User::find($data['iduser']);
+                $user->puntosizq = ($user->puntosizq + $data['point_left']);
+                $user->puntosder = ($user->puntosder + $data['point_right']);
+                $user->save();
+                DB::table('wallet_point')->insert($data);
+            }
         }
     }
 
