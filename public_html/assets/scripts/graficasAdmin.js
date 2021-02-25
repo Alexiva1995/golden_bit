@@ -340,7 +340,7 @@ function divisiones(divisiones) {
         show: false
       }
     },
-    labels: ['ORO', 'PLATA', 'BRONCE'],
+    labels: ['VIP', 'STANDAR'],
     series: divisiones,
     dataLabels: {
       enabled: false

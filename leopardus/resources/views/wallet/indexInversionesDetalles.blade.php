@@ -33,7 +33,7 @@
                             <td>{{$detalle->concepto}}</td>
                             <td>{{$detalle->porcentaje}} %</td>
                             <td>$ {{$detalle->debito}}</td>
-                            <td>$ {{($detalle->retirado)}}</td>
+                            <td>$ {{($detalle->credito)}}</td>
                         </tr>
                         @endforeach
                     </tbody>

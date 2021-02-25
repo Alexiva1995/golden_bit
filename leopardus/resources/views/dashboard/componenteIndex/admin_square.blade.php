@@ -122,7 +122,7 @@
             <div class="col-md-4 col-12 mt-2">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between pb-0">
-                        <h5 class="card-title">Division de Paquetes - Año {{date('Y')}}</h5>
+                        <h5 class="card-title">Division de Paquetes</h5>
                     </div>
                     <div class="card-content">
                         <div class="card-body py-0">
@@ -132,28 +132,19 @@
                             <li class="list-group-item d-flex justify-content-between ">
                                 <div class="series-info">
                                     <i class="fa fa-circle font-small-3 text-warning"></i>
-                                    <span class="text-bold-600">ORO</span>
+                                    <span class="text-bold-600">VIP</span>
                                 </div>
                                 <div class="product-result">
-                                    <span>{{$data['divisiones']['ORO']}}</span>
+                                    <span>{{$data['divisiones']['VIP']}}</span>
                                 </div>
                             </li>
                             <li class="list-group-item d-flex justify-content-between ">
                                 <div class="series-info">
                                     <i class="fa fa-circle font-small-3 text-primary"></i>
-                                    <span class="text-bold-600">PLATA</span>
+                                    <span class="text-bold-600">STANDAR</span>
                                 </div>
                                 <div class="product-result">
-                                    <span>{{$data['divisiones']['PLATA']}}</span>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between ">
-                                <div class="series-info">
-                                    <i class="fa fa-circle font-small-3 text-danger"></i>
-                                    <span class="text-bold-600">BRONCE</span>
-                                </div>
-                                <div class="product-result">
-                                    <span>{{$data['divisiones']['BRONCE']}}</span>
+                                    <span>{{$data['divisiones']['STANDAR']}}</span>
                                 </div>
                             </li>
                         </ul>
