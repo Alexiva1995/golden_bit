@@ -353,19 +353,29 @@ class IndexController extends Controller
      */
     public function getDivisionPaquete()
     {
-        $sql = "SELECT COUNT(oi.id) as 'cant', oi.paquete_inversion, wp.post_title as 'division' FROM `orden_inversiones` as oi INNER JOIN wp_posts as wp on (wp.ID = oi.paquete_inversion) WHERE status = 1 AND paquete_inversion != '' AND YEAR(oi.created_at) = ? GROUP BY paquete_inversion order by paquete_inversion desc";
-        $divisiones = DB::select($sql, [date('Y')]);
-        $data = [
-            'ORO' => 0,
-            'PLATA' => 0,
-            'BRONCE' => 0
-        ];
+        $users = User::where('ID', '!=', 1)->get();
+        
         $arraydivision = [];
-        foreach ($divisiones as $division ) {
-            $data[$division->division] = $division->cant;
-            $arraydivision [] = $division->cant;
+        $totalS = 0;
+        $totalV = 0;
+        foreach ($users as $user) {
+            $paquete = json_decode($user->paquete);
+            if ($paquete != null) {
+                if ($paquete->code == 1) {
+                    $totalV++;
+                } else {
+                    $totalS++;
+                }
+                
+            }
         }
-        $data['total'] = json_encode($arraydivision);
+        $arraydivision [] = $totalV;
+        $arraydivision [] = $totalS;
+        $data = [
+            'VIP' => $totalV,
+            'STANDAR' => $totalS,
+            'total' => json_encode($arraydivision)
+        ];
         return $data;
     }
 
