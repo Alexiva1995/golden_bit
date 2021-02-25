@@ -95,14 +95,15 @@ class IndexController extends Controller
         $resul = User::where($typeTree, '=', $id)->orderBy('ladomatrix', 'desc')->get();
         foreach ($resul as $user) {
             $patrocinado = User::find($user->referred_id);
-            $avatarTree = asset('avatar/'.$user->avatar);
+            $paquete = json_decode($user->paquete);
+            $avatarTree = ($paquete->code == 1) ? asset('assets/imgLanding/icono_plan_vip.png') : asset('assets/imgLanding/icono_plan_standar.png');
             
             $userTemp = DB::table('user_campo')->where('ID', '=', $user->ID)->first();
             $user->fullname = $user->display_name;
             if (!empty($userTemp)) {
                 $user->fullname = $userTemp->firstname.' '.$user->lastname;
             }
-            $user->avatar = asset('avatar/'.$user->avatar);
+
             $user->avatarTree = $avatarTree;
             $user->avatar = asset('avatar/'.$user->avatar);
             $user->nivel = $nivel;

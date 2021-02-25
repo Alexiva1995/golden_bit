@@ -58,7 +58,7 @@
 		$.post(url, data, function(response){
 			if (response = 1) {
 				Swal.fire({
-				title: 'Lado Matrix Actualizado',
+				title: 'Lado Binario Actualizado',
 				text: "Su nuevo lado de registro binario es por la "+ lado,
 				type: "success",
 				confirmButtonClass: 'btn btn-primary',

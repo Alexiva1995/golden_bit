@@ -38,8 +38,8 @@ class InversionController extends Controller
     public function pago(Request $request)
     {
         $validate = $request->validate([
-            // 'inversion' => ['required', 'numeric', 'min:100'],
-            'inversion' => ['required'],
+            'inversion' => ['required', 'numeric', 'min:100'],
+            // 'inversion' => ['required'],
             'name' => ['required']
         ]);
         try {
@@ -163,6 +163,45 @@ class InversionController extends Controller
     }
 
     /**
+     * Permite Verificar las compras procesadas
+     *
+     * @return void
+     */
+    public function ActivarManualesCompras()
+    {
+        try {
+            $transaciones = DB::table('coinpayment_transactions')->where([
+                ['status', '=', 100]
+            ])->get();
+            foreach ($transaciones as $transacion) {
+                $orden = OrdenInversion::find($transacion->idorden);
+                if ($orden != null) {
+                    if ($orden->paquete_inversion == 0) {
+                        $fecha_inicio = new Carbon($transacion->created_at);
+                        $fecha_fin = new Carbon($transacion->created_at);
+                        DB::table('orden_inversiones')->where('idtrasancion', '=', $orden->idtrasancion)->update([
+                            'fecha_inicio' => $fecha_inicio,
+                            'fecha_fin' => $fecha_fin->addYear(),
+                            'status' => 1
+                        ]);
+                        $this->comisionController->checkExictRentabilidad($orden->iduser, $orden->id);
+                    }elseif($orden->paquete_inversion == 100){
+                        $fecha_inicio = new Carbon($transacion->created_at);
+                        DB::table('orden_inversiones')->where('idtrasancion', '=', $orden->idtrasancion)->update([
+                            'fecha_inicio' => $fecha_inicio,
+                            'fecha_fin' => $fecha_inicio,
+                            'status' => 1
+                        ]);
+                        $this->activacionController->activarPaqueteGold($orden->iduser);
+                    }
+                }
+            }
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+    }
+
+    /**
      * Permite obtener el valor del paquete gold a pagar
      *
      * @param integer $iduser
@@ -190,7 +229,6 @@ class InversionController extends Controller
      */
     public function pagoGold()
     {
-        
         try{      
             $inversion = $this->getValorPaqueteGold(Auth::user()->ID);
             $porcentage = ($inversion * 0.06);
