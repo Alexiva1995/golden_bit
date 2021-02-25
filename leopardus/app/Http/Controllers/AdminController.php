@@ -54,7 +54,8 @@ class AdminController extends Controller
                 'inversiones' => $inversiones,
                 'paquete' => $paquete,
                 'goldPaquete' => $this->inversionesController->getValorPaqueteGold(Auth::user()->ID),
-                'binario' => $this->indexController->statusBinary(Auth::user()->ID)
+                'binario' => $this->indexController->statusBinary(Auth::user()->ID),
+                'img' => ($paquete == 1) ? asset('assets/imgLanding/icono_plan_vip.png') : asset('assets/imgLanding/icono_plan_standar.png')
             ];
 
             if (Auth::user()->rol_id == 0) {

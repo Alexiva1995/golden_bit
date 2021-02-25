@@ -42,10 +42,13 @@
                             </td>
                             <td>
                                 @if ($inversion->limite > $inversion->retirado)
-                                <button class="btn btn-info" onclick="retiro('{{$inversion->id}}, {{$inversion->balance}}')">
+                                <button class="btn btn-info" onclick="retiro('{{$inversion->id}}', '{{$inversion->balance}}')">
                                     Retirar
                                 </button>
                                 @endif
+                                <a href="{{route('wallet-detalles', [$inversion->id])}}" class="btn btn-info">
+                                    Detalles
+                                </a>
                                 {{-- @if ($inversion['estado'] != 'Retirado')
                                 <button class="btn btn-info" onclick="retiro2('{{json_encode($inversion)}}')">
                                     Retirar Inversion
@@ -75,16 +78,16 @@
           <form action="{{route('wallet-inversiones-retirar')}}" method="post" id="form_retiro">
             {{ csrf_field() }}
             <input type="hidden" name="idinversion" id="idinversion">
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="">Plan</label>
                 <input type="text" class="form-control" readonly name="plan" id="plan">
+            </div> --}}
+            <div class="form-group">
+                {{-- <label for="">% Retiro</label> --}}
+                <input type="hidden" class="form-control" readonly name="porc_penalizacion" id="porc_penalizacion">
             </div>
             <div class="form-group">
-                <label for="">% Retiro</label>
-                <input type="text" class="form-control" readonly name="porc_penalizacion" id="porc_penalizacion">
-            </div>
-            <div class="form-group">
-                <label for="">Ganacia</label>
+                <label for="">Disponibles</label>
                 <input type="text" class="form-control" readonly name="ganacia" id="ganacia">
             </div>
             <div class="form-group">

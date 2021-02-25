@@ -136,6 +136,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'licencia', 'guest']
         Route::post('/cobrosfechas', 'WalletController@cobros_fechas')->name('wallet-cobros-fechas');
         // inversiones
         Route::get('/walletInversiones', 'WalletController@indexInversiones')->name('wallet-invesiones');
+        Route::get('/detailInversiones/{id}', 'WalletController@indexInversionDetalle')->name('wallet-detalles');
         Route::post('retirarInversiobes', 'WalletController@retirarInversiones')->name('wallet-inversiones-retirar');
         Route::post('retirar_invertido', 'WalletController@retirarInvertido')->name('wallet-inversiones-retirar-invertido');
         // admin

@@ -13,18 +13,18 @@
                             @endif
                         </h5>
                     </div>
-                    {{-- <div class="card-header d-flex flex-column align-items-center justify-content-center pb-2" onclick="copyToClipboard('copy')"> --}}
-                        {{-- <div class="avatar p-50 m-0" style="background-color: #02E9FE;">
+                    <div class="card-header d-flex flex-column align-items-center justify-content-center pb-2" onclick="copyToClipboard('copy')">
+                        <div class="avatar p-50 m-0" style="background-color: #02E9FE;">
                             <div class="avatar-content">
                                 <i class="feather icon-link font-medium-5" style="color: white;"></i>
                             </div>
-                        </div> --}}
+                        </div>
                         {{-- <h2 class="text-bold-700 mt-1">Copiar Link</h2>
                         <p class="mb-0">Link de Referir</p> --}}
                         <p style="display:none;" id="copy">
                             {{route('autenticacion.new-register').'?referred_id='.Auth::user()->ID}}
                         </p>
-                    {{-- </div> --}}
+                    </div>
                     <div class="card-body" style="padding-bottom: 0px;">
                         <div class="row justify-content-center">
                             <h6 class="text-center">Selecione un lado de Registro para su arbol</h6>
@@ -44,6 +44,9 @@
             @foreach ($data['inversiones'] as $inversion)
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="card h-100 mt-1 mb-1">
+                    <div class="card-header d-flex flex-column align-items-center justify-content-center" onclick="copyToClipboard('copy')">
+                        <img src="{{$data['img']}}" alt="" height="50">  
+                    </div>
                     <div class="card-header d-flex flex-column align-items-start pb-2">
                         <p class="mb-0 mt-1">
                             Inversion

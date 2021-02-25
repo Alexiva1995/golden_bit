@@ -335,6 +335,19 @@ class WalletController extends Controller
 	}
 
 	/**
+	 * Lleva a la vista de los detalles de las rentabilidad
+	 *
+	 * @param integer $id
+	 * @return void
+	 */
+	public function indexInversionDetalle($id)
+	{
+		$detalles = DB::table('log_rentabilidad_pay')->where('id_log_renta', $id)->get();
+
+		return view('wallet.indexInversionesDetalles', compact('detalles')); 
+	}
+
+	/**
 	 * Permite procesar el proceso de la liquidacion de la inversiones
 	 *
 	 * @param Request $request
