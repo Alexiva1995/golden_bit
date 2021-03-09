@@ -44,5 +44,8 @@ class checkPucharse extends Command
 
         $inversion->verificarCompras();
         $this->info('Compras Verificadas '. Carbon::now()); 
+
+        $inversion->ActivarManualesCompras();
+        $this->info('Compras activadas de forma manual '. Carbon::now()); 
     }
 }

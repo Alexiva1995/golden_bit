@@ -131,29 +131,31 @@ class InversionController extends Controller
             ])->get();
             foreach ($transaciones as $transacion) {
                 $result = CoinPayment::getstatusbytxnid($transacion->txn_id);
-                DB::table('coinpayment_transactions')->where('txn_id', $transacion->txn_id)->update($result);
-                $orden = null;
-                if ($result['status'] == 100) {
-                    $orden = OrdenInversion::find($transacion->idorden);
-                }
-                if ($orden != null) {
-                    if ($orden->paquete_inversion == 0) {
-                        $fecha_inicio = new Carbon($transacion->created_at);
-                        $fecha_fin = new Carbon($transacion->created_at);
-                        DB::table('orden_inversiones')->where('idtrasancion', '=', $orden->idtrasancion)->update([
-                            'fecha_inicio' => $fecha_inicio,
-                            'fecha_fin' => $fecha_fin->addYear(),
-                            'status' => 1
-                        ]);
-                        $this->comisionController->checkExictRentabilidad($orden->iduser, $orden->id);
-                    }elseif($orden->paquete_inversion == 100){
-                        $fecha_inicio = new Carbon($transacion->created_at);
-                        DB::table('orden_inversiones')->where('idtrasancion', '=', $orden->idtrasancion)->update([
-                            'fecha_inicio' => $fecha_inicio,
-                            'fecha_fin' => $fecha_inicio,
-                            'status' => 1
-                        ]);
-                        $this->activacionController->activarPaqueteGold($orden->iduser);
+                if ($result != null && is_array($result)) {
+                    DB::table('coinpayment_transactions')->where('txn_id', $transacion->txn_id)->update($result);
+                    $orden = null;
+                    if ($result['status'] == 100) {
+                        $orden = OrdenInversion::find($transacion->idorden);
+                    }
+                    if ($orden != null) {
+                        if ($orden->paquete_inversion == 0) {
+                            $fecha_inicio = new Carbon($transacion->created_at);
+                            $fecha_fin = new Carbon($transacion->created_at);
+                            DB::table('orden_inversiones')->where('idtrasancion', '=', $orden->idtrasancion)->update([
+                                'fecha_inicio' => $fecha_inicio,
+                                'fecha_fin' => $fecha_fin->addYear(),
+                                'status' => 1
+                            ]);
+                            $this->comisionController->checkExictRentabilidad($orden->iduser, $orden->id);
+                        }elseif($orden->paquete_inversion == 100){
+                            $fecha_inicio = new Carbon($transacion->created_at);
+                            DB::table('orden_inversiones')->where('idtrasancion', '=', $orden->idtrasancion)->update([
+                                'fecha_inicio' => $fecha_inicio,
+                                'fecha_fin' => $fecha_inicio,
+                                'status' => 1
+                            ]);
+                            $this->activacionController->activarPaqueteGold($orden->iduser);
+                        }
                     }
                 }
             }
@@ -170,9 +172,12 @@ class InversionController extends Controller
     public function ActivarManualesCompras()
     {
         try {
+            $fecha = Carbon::now();
             $transaciones = DB::table('coinpayment_transactions')->where([
                 ['status', '=', 100]
-            ])->get();
+            ])
+            ->whereDate('created_at', '>=', $fecha->copy()->subDay(7))
+            ->get();
             foreach ($transaciones as $transacion) {
                 $orden = OrdenInversion::find($transacion->idorden);
                 if ($orden != null) {
