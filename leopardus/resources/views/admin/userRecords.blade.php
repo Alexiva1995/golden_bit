@@ -27,6 +27,9 @@
 								Estatus
 							</th>
 							<th class="text-center">
+								Paquete
+							</th>
+							<th class="text-center">
 								Accion
 							</th>
 						</tr>
@@ -53,7 +56,13 @@
 
 							</td>
 							<td class="text-center">
-								<a class="btn btn-info" href="{{ route('admin.useredit', $usuario['ID']) }}">
+								{{ $usuario['paquete'] }}
+							</td>
+							<td class="text-center">
+								<a class="btn btn-info" href="{{route('admin.change.paquete', [$usuario['ID'], $usuario['cambiar']])}}">
+									Cambiar a {{($usuario['cambiar'] == 0)? 'Standar' : 'Gold'}}</a>
+
+								{{-- <a class="btn btn-info" href="{{ route('admin.useredit', $usuario['ID']) }}">
 									<i class="fa fa-edit"></i></a>
 
 								@if($usuario['ID'] != 1)
@@ -61,8 +70,7 @@
 									onclick="eliminarProducto(this.value)">
 									<i class="fa fa-trash"></i>
 								</button>
-								@endif
-
+								@endif --}}
 							</td>
 						</tr>
 						@endforeach

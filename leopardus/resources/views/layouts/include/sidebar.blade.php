@@ -67,6 +67,12 @@
                 </a>
                 <ul class="sub-menu" style="background-color: #1b1b1b;">
                     <li class="nav-item">
+                        <a href="{{route('admin.userrecords')}}" class="nav-link text-white">
+                            <i class="feather icon-circle"></i>
+                            <span class="title">Cambiar Paquete</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{route('autenticacion.new-register').'?referred_id='.Auth::user()->ID}}"
                             class="nav-link" style="color: #FFFFFF;">
                             <i class="feather icon-circle"></i>

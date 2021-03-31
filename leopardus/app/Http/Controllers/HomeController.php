@@ -17,6 +17,7 @@ use App\Settings;
 // use PHPExcel_IOFactory;
 // use Reflector;
 
+use function GuzzleHttp\json_decode;
 use function GuzzleHttp\json_encode;
 
 class HomeController extends Controller
@@ -171,16 +172,53 @@ class HomeController extends Controller
 
 
         foreach ($usuarios as $llave) {
-          array_push($datos, [
-            'ID' => $llave->ID,
-            'display_name' => $llave->display_name,
-            'user_email' => $llave->user_email,
-            'rol_id' => $llave->rol_id,
-            'status' => $llave->status,
-          ]);
+            $paquete = json_decode($llave->paquete);
+        
+            array_push($datos, [
+                'ID' => $llave->ID,
+                'display_name' => $llave->display_name,
+                'user_email' => $llave->user_email,
+                'rol_id' => $llave->rol_id,
+                'status' => $llave->status,
+                'paquete' => $paquete->nombre,
+                'cambiar' => ($paquete->code == 1) ? 0 : 1
+            ]);
         }
 
         return view('admin.userRecords')->with(compact('datos'));
+    }
+
+    /**
+     * Permite cambiar el paquete a los usuarios
+     *
+     * @param integer $iduser
+     * @param integer $paquete
+     * @return void
+     */
+    public function changePaquete($iduser, $paquete)
+    {
+        try {
+            $user = User::find($iduser);
+            $arregloPaquete = [
+                0 => $paqueteNew = [
+                    'nombre' => 'Standar',
+                    'fecha' => Carbon::now()->addMonth()->format('Y-m-d'),
+                    'code' => 0
+                ],
+                1 => $paqueteNew = [
+                    'nombre' => 'Gold',
+                    'fecha' => Carbon::now()->addMonth()->format('Y-m-d'),
+                    'code' => 1
+                ]
+            ];
+            $user->paquete = json_encode($arregloPaquete[$paquete]);
+            $user->save();
+            return redirect()->back()->with('msj', 'Paquete Actualizado con exito');
+        } catch (\Throwable $th) {
+            \Log::error('Cambiar Paquete -> '.$th);
+            return redirect()->back()->with('msj', 'Ocurrio un error, por favor contacte con el administrador');
+
+        }
     }
 
     public function changePorcent()

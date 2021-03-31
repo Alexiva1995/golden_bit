@@ -363,6 +363,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'licencia', 'guest']
 
     Route::get('/userrecords', 'HomeController@user_records')->name('admin.userrecords');
 
+    Route::get('/change/{iduser}/user/{paquete}/package', 'HomeController@changePaquete')->name('admin.change.paquete');
+
     Route::get('/useredit/{id}', 'ActualizarController@user_edit')->name('admin.useredit');
 
     Route::post('/userdelete', 'HomeController@deleteProfile')->name('admin.userdelete');
