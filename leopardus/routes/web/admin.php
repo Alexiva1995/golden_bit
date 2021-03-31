@@ -127,6 +127,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'licencia', 'guest']
 
     Route::group(['prefix' => 'wallet'], function(){
         Route::get('/', 'WalletController@index')->name('wallet-index');
+        Route::get('/puntos', 'WalletController@indexPoints')->name('wallet-puntos');
         Route::post('/transferencia', 'WalletController@transferencia')->name('wallet-transferencia');
         Route::get('/obtenermetodo/{id}', 'WalletController@datosMetodo')->name('wallet-metodo');
         Route::post('/retiro', 'WalletController@retiro')->name('wallet-retiro');

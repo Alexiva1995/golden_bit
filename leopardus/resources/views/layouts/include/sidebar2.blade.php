@@ -61,6 +61,14 @@
                 </a>
             </li>
             {{-- FIN WALLET --}}
+            {{-- INICIO WALLET --}}
+            <li class="nav-item">
+                <a href="{{route('wallet-puntos')}}" class="nav-link text-white">
+                    <i class="feather icon-bar-chart"></i>
+                    <span class="title">Wallet Puntos</span>
+                </a>
+            </li>
+            {{-- FIN WALLET --}}
             {{-- INICIO DE ORDENES --}}
             <li class="nav-item">
                 <a href="javascript:;" class="nav-link text-white nav-toggle">

@@ -67,8 +67,12 @@ class ComisionesController extends Controller
                     if ($user->puntosizq >= $user->puntosder) {
                         $puntos = $user->puntosder;
                     }else{
-                        $puntos = $user->puntosder;
+                        $puntos = $user->puntosizq;
                     }
+                    $this->pagarPuntos($puntos, 'I', $user->ID);
+                    $this->pagarPuntos($puntos, 'D', $user->ID);
+                    
+               
                     $pagar = ($puntos * $porcentaje);
                     $concepto = 'Bono Binario, Puntos pagados: '.$puntos;
                     $usuarios = User::find($user->ID);
@@ -84,6 +88,40 @@ class ComisionesController extends Controller
         } catch (\Throwable $th) {
             dd($th);
         }
+    }
+
+    /**
+     * Permite procesar los puntos pagadps
+     *
+     * @param integer $puntosTotales - puntos a pagar
+     * @param string $side - lado a inspecionar
+     * @param integer $iduser - usuario a verificar
+     * @return void
+     */
+    public function pagarPuntos(int $puntosTotales, string $side, int $iduser)
+    {
+        $arrgloComisiones = [];
+        $walletPuntos = DB::table('wallet_point')->where([
+            ['iduser', '=', $iduser],
+            ['side', '=', $side],
+            ['status', '=', 0]
+        ])->get();
+
+        $lado = ($side == 'I')? 'point_left' : 'point_right';
+        
+        $sumpuntos = 0;
+        foreach ($walletPuntos as $wallet) {
+            $sumpuntos = ($wallet->$lado + $sumpuntos);
+            if ($sumpuntos <= $puntosTotales) {
+                $arrgloComisiones[] = $wallet->id;
+            }else{
+                $sumpuntos = ($sumpuntos - $wallet->$lado);
+            }
+        }
+        DB::table('wallet_point')->whereIn('id', $arrgloComisiones)->update([
+            'status' => 1,
+            'fecha_pagado' => Carbon::now()
+        ]);
     }
 
     /**
