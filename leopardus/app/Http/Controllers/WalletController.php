@@ -291,60 +291,64 @@ class WalletController extends Controller
 				$user = User::find(Auth::user()->ID);
 				$admin = User::find(1);
 				$inversion = DB::table('log_rentabilidad')->where('id', $request->idinversion)->first();
-				$concepto = 'Liquidacion de '.$request->retirar.' de la Rentabilidad: '.$request->idinversion;
-				$credito = $request->retirar;
-				$balance = 0;
-				if ($request->porc_penalizacion != 0) {
-					// $user->rentabilidad = ($user->rentabilidad - $request->retirar);
-					// $admin->rentabilidad = ($user->rentabilidad + $request->mont_penalizacion);
-					$total = ($inversion->retirado + $request->retirar);
-					if ($total >= $inversion->limite) {
-						return redirect()->back()->with('msj2', 'El valor total retirado supera el monto limite');
+				if ($inversion->balance > 0) {
+					$concepto = 'Liquidacion de '.$request->retirar.' de la Rentabilidad: '.$request->idinversion;
+					$credito = $request->retirar;
+					$balance = 0;
+					if ($request->porc_penalizacion != 0) {
+						// $user->rentabilidad = ($user->rentabilidad - $request->retirar);
+						// $admin->rentabilidad = ($user->rentabilidad + $request->mont_penalizacion);
+						$total = ($inversion->retirado + $request->retirar);
+						if ($total >= $inversion->limite) {
+							return redirect()->back()->with('msj2', 'El valor total retirado supera el monto limite');
+						}
+						$balance = ($inversion->ganado - $total);
+						$dataRent = [
+							'retirado' => $total,
+							'balance' => $balance
+						];
 					}
-					$balance = ($inversion->ganado - $total);
-					$dataRent = [
-						'retirado' => $total,
-						'balance' => $balance
+
+					$wallet = DB::table('user_campo')->where('ID', '=', Auth::user()->ID)->select('paypal')->first();
+
+					$comisiones = new ComisionesController();
+					$dataLiquidation = [
+						'iduser' => Auth::user()->ID,
+						'total' => $request->total,
+						'wallet_used' => $wallet->paypal,
+						'process_date' => Carbon::now(),
+						'status' => 0,
+						'type_liquidation' => 'Inversion',
+						'idinversion' => $inversion->id,
+						'monto_bruto' => $credito,
+						'feed' => $request->mont_penalizacion
 					];
+
+					$dataPay = [
+						'iduser' => Auth::user()->ID,
+						'id_log_renta' => $inversion->id,
+						'porcentaje' => 0,
+						'debito' => 0,
+						'credito' => $credito,
+						'balance' => $balance,
+						'fecha_pago' => Carbon::now(),
+						'concepto' => $concepto,
+					];
+
+					$comisiones->savePayRentabilidad($dataPay, $inversion->id, $dataRent);
+					
+					// $concepto = 'Liquidacion generada por un monto de '.$credito;
+					$liquidacion = new LiquidationController();
+					$liquidacion->saveLiquidation($dataLiquidation);
+
+
+					return redirect()->back()->with('msj', 'Retiro procesado con exito');
+				}else{
+					return redirect()->back()->with('msj', 'El monto disponible esta por debajo de 0');
 				}
-
-				$wallet = DB::table('user_campo')->where('ID', '=', Auth::user()->ID)->select('paypal')->first();
-
-				$comisiones = new ComisionesController();
-				$dataLiquidation = [
-					'iduser' => Auth::user()->ID,
-					'total' => $request->total,
-					'wallet_used' => $wallet->paypal,
-					'process_date' => Carbon::now(),
-					'status' => 0,
-					'type_liquidation' => 'Inversion',
-					'idinversion' => $inversion->id,
-					'monto_bruto' => $credito,
-					'feed' => $request->mont_penalizacion
-				];
-
-				$dataPay = [
-					'iduser' => Auth::user()->ID,
-					'id_log_renta' => $inversion->id,
-					'porcentaje' => 0,
-					'debito' => 0,
-					'credito' => $credito,
-					'balance' => $balance,
-					'fecha_pago' => Carbon::now(),
-					'concepto' => $concepto,
-				];
-
-				$comisiones->savePayRentabilidad($dataPay, $inversion->id, $dataRent);
-				
-				// $concepto = 'Liquidacion generada por un monto de '.$credito;
-				$liquidacion = new LiquidationController();
-				$liquidacion->saveLiquidation($dataLiquidation);
-
-
-				return redirect()->back()->with('msj', 'Retiro procesado con exito');
 			}
 		} catch (\Throwable $th) {
-			//throw $th;
+			\Log::error('Error Proceso retirarInversiones '.$th);
 		}
 	}
 

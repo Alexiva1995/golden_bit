@@ -40,33 +40,102 @@ class InversionController extends Controller
         $validate = $request->validate([
             'inversion' => ['required', 'numeric', 'min:100'],
             // 'inversion' => ['required'],
-            'name' => ['required']
+            'name' => ['required'],
+            'tipo_pago' => ['required']
         ]);
         try {
             if ($validate) {
-                $inversion = (double) $request->inversion;
-                $porcentage = ($inversion * 0.06);
-                $total = ($inversion + $porcentage);
-                $transacion = [
-                    'amountTotal' => $total,
-                    'note' => 'Inversion de '.number_format($request->inversion, 2, ',', '.').' USD',
-                    'idorden' => $this->saveOrden($inversion, 0),
-                    'tipo' => 'inversion',
-                    'buyer_email' => Auth::user()->user_email,
-                    'redirect_url' => route('tienda-index')
-                ];
-                $transacion['items'][] = [
-                    'itemDescription' => 'Inversion de '.number_format($request->inversion, 2, ',', '.').' USD',
-                    'itemPrice' => $inversion, // USD
-                    'itemQty' => (INT) 1,
-                    'itemSubtotalAmount' => $inversion // USD
-                ];
-    
-                $ruta = CoinPayment::generatelink($transacion);
-                return redirect($ruta);
+                if ($request->tipo_pago == 'btc') {
+                    $inversion = (double) $request->inversion;
+                    $porcentage = ($inversion * 0.06);
+                    $total = ($inversion + $porcentage);
+
+                    $transacion = [
+                        'amountTotal' => $total,
+                        'note' => 'Inversion de '.number_format($request->inversion, 2, ',', '.').' USD',
+                        'idorden' => $this->saveOrden($inversion, 0),
+                        'tipo' => 'inversion',
+                        'buyer_email' => Auth::user()->user_email,
+                        'redirect_url' => route('tienda-index')
+                    ];
+
+                    $transacion['items'][] = [
+                        'itemDescription' => 'Inversion de '.number_format($request->inversion, 2, ',', '.').' USD',
+                        'itemPrice' => $inversion, // USD
+                        'itemQty' => (INT) 1,
+                        'itemSubtotalAmount' => $inversion // USD
+                    ];
+        
+                    $ruta = CoinPayment::generatelink($transacion);
+                    return redirect($ruta);
+                }else{
+                    $msj = $this->procesarInversionWallet($request);
+                    return redirect()->back()->with('msj', $msj);
+                }
             }
         } catch (\Throwable $th) {
+            \Log::error('Error Proceso Pago '.$th);
             return redirect()->back()->with('msj', 'Ah Ocurrido un error, por favor contacte con el administrador');
+        }
+    }
+
+    /**
+     * Permite comprar un paquete por medio de el dinero de la wallet
+     *
+     * @param object $request
+     * @return string
+     */
+    function procesarInversionWallet(object $request): string
+    {
+        try {
+            $iduser = Auth::user()->ID;
+            $msj = 'La inversion es mayor al monto disponible';
+            $inversion = (double) $request->inversion;
+            $inversionPagar = DB::table('log_rentabilidad')->where([
+                ['iduser', '=', $iduser],
+                ['ganado', '>=', $inversion]
+            ])->first();
+            if ($inversionPagar != null) {
+                $total = ($inversionPagar->retirado + $inversion);
+                if ($total >= $inversionPagar->limite) {
+                    $msj = 'El valor total retirado supera el monto limite';
+                }else{
+                    $balance = ($inversionPagar->ganado - $total);
+                    $dataRent = [
+                        'retirado' => $total,
+                        'balance' => $balance
+                    ];
+                    $idOrden = $this->saveOrden($inversion, 0);
+                    $fecha_inicio = Carbon::now();
+                    DB::table('orden_inversiones')->where('id', '=', $idOrden)->update([
+                        'fecha_inicio' => $fecha_inicio,
+                        'idtrasancion' => 'Wallet-'.$fecha_inicio->format('YmdHis'),
+                        'fecha_fin' => $fecha_inicio->copy()->addYear(),
+                        'status' => 1
+                    ]);
+                    $this->comisionController->checkExictRentabilidad($iduser, $idOrden);
+
+                    $concepto = 'Compra de un paquete de inversion por un monto de '.$inversion;
+
+                    $dataPay = [
+                        'iduser' => Auth::user()->ID,
+                        'id_log_renta' => $inversionPagar->id,
+                        'porcentaje' => 0,
+                        'debito' => 0,
+                        'credito' => $inversion,
+                        'balance' => $balance,
+                        'fecha_pago' => Carbon::now(),
+                        'concepto' => $concepto,
+                    ];
+
+                    $this->comisionController->savePayRentabilidad($dataPay, $inversionPagar->id, $dataRent);
+
+                    $msj = 'Compra Procesada Con exito';
+                }
+            }
+            return $msj;
+        } catch (\Throwable $th) {
+            \Log::error('Error Proceso procesarInversionWallet '.$th);
         }
     }
 
