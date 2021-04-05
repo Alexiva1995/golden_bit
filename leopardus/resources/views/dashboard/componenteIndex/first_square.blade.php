@@ -61,7 +61,7 @@
                             <div class="progress progress-xl" style="width:100%; margin-bottom: 0px;">
                                 <div class="progress-bar" role="progressbar" aria-valuenow="20"
                                     aria-valuemin="0" style="background: #c8ad77; width:{{$inversion->progreso}}%;">
-                                    {{$inversion->progreso}} %
+                                    {{($inversion->progreso * 2)}} %
                                 </div>
                             </div>
                         </p>
