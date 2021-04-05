@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-12 mb-2 mt-2">
+        {{-- <div class="col-md-12 mb-2 mt-2">
             <h5 for="">Seleccione un metodo de pago</h5>
             <div>
                 <select name="tipo_pago" class="form-control required col-12">
@@ -24,5 +24,5 @@
                     <option value="wallet">Wallet</option>
                 </select>
             </div>
-        </div>
+        </div> --}}
 </fieldset>

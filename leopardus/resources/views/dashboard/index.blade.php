@@ -1,22 +1,24 @@
 @extends('layouts.dashboard')
 
 @section('content')
-	<div class="contai2">
-		<div class="row">
-			{{-- primeros cuadro --}}
-			@if (Auth::user()->rol_id == 0)
-			@include('dashboard.componenteIndex.admin_square')
-			@else
-			@include('dashboard.componenteIndex.first_square')
-			@endif
-			{{-- secundo cuadro --}}
-			@if ($data['paquete'] == 0)
-				@include('dashboard.componenteIndex.modalGold')
-			@endif
-			{{-- tecer cuadro --}}
-			{{-- @include('dashboard.componenteIndex.third_square') --}}
-		</div>
+<div class="contai2">
+	{{-- alertas --}}
+	@include('dashboard.componentView.alert')
+	<div class="row">
+		{{-- primeros cuadro --}}
+		@if (Auth::user()->rol_id == 0)
+		@include('dashboard.componenteIndex.admin_square')
+		@else
+		@include('dashboard.componenteIndex.first_square')
+		@endif
+		{{-- secundo cuadro --}}
+		@if ($data['paquete'] == 0)
+		@include('dashboard.componenteIndex.modalGold')
+		@endif
+		{{-- tecer cuadro --}}
+		{{-- @include('dashboard.componenteIndex.third_square') --}}
 	</div>
+</div>
 @endsection
 
 @push('custom_js')
@@ -34,19 +36,19 @@
 		Swal.fire({
 			title: '¡Link Copiado!',
 			text: "Su link de referido esta listo para pegar",
-      		type: "success",
+			type: "success",
 			confirmButtonClass: 'btn btn-primary',
 			buttonsStyling: false,
-			}).then((value) => {
-				if (value) {
-					window.location.reload()
-				}
-			})
+		}).then((value) => {
+			if (value) {
+				window.location.reload()
+			}
+		})
 	}
 
 	/**
-	* Permite modificar el lado binario donde se van a ir registrando los usuarios
-	*/
+	 * Permite modificar el lado binario donde se van a ir registrando los usuarios
+	 */
 	function updateSideBinary(value) {
 		let url = "{{route('change.side')}}"
 		let valor = value
@@ -55,48 +57,48 @@
 			_token: "{{ csrf_token() }}",
 		}
 		let lado = (valor == 'D') ? 'Derecha' : 'Izquierda'
-		$.post(url, data, function(response){
+		$.post(url, data, function (response) {
 			if (response = 1) {
 				Swal.fire({
-				title: 'Lado Binario Actualizado',
-				text: "Su nuevo lado de registro binario es por la "+ lado,
-				type: "success",
-				confirmButtonClass: 'btn btn-primary',
-				buttonsStyling: false,
+					title: 'Lado Binario Actualizado',
+					text: "Su nuevo lado de registro binario es por la " + lado,
+					type: "success",
+					confirmButtonClass: 'btn btn-primary',
+					buttonsStyling: false,
 				}).then((value) => {
 					if (value) {
 						copyToClipboard('copy')
 					}
 				})
-			}else{
+			} else {
 				Swal.fire({
-				title: 'Error',
-				text: "No se pudo actualizar el lado a registrar intente de nuevo",
-				type: "danger",
-				confirmButtonClass: 'btn btn-primary',
-				buttonsStyling: false,
-			}).then((value) => {
-				if (value) {
-					window.location.reload()
-				}
-			})
+					title: 'Error',
+					text: "No se pudo actualizar el lado a registrar intente de nuevo",
+					type: "danger",
+					confirmButtonClass: 'btn btn-primary',
+					buttonsStyling: false,
+				}).then((value) => {
+					if (value) {
+						window.location.reload()
+					}
+				})
 			}
 		})
 	}
 
 	function fbs_click(publi) {
-		u=publi.img;
+		u = publi.img;
 		// t=document.title;
-   		t=publi.title
+		t = publi.title
 		let urlCom = "{{route('publicidad.compartido')}}"
-		let url = 'http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t)
-   		window.open(url, 'sharer', 'toolbar=0,status=0,width=626,height=436')
+		let url = 'http://www.facebook.com/sharer.php?u=' + encodeURIComponent(u) + '&t=' + encodeURIComponent(t)
+		window.open(url, 'sharer', 'toolbar=0,status=0,width=626,height=436')
 		data = {
 			id: publi.id,
 			social: 'facebook',
 			_token: '{{ csrf_token() }}'
-        }
-		$.post(urlCom, data, function(){
+		}
+		$.post(urlCom, data, function () {
 			alert('compartido')
 			window.location.reload()
 		})
@@ -106,7 +108,7 @@
 
 @if ($data['paquete'] == 0)
 <script>
-	$(document).ready(function(){
+	$(document).ready(function () {
 		$('#myModalGold').modal('show')
 	})
 </script>
@@ -116,8 +118,8 @@
 @push('vendor_css')
 <link rel="stylesheet" type="text/css" href="{{asset('app-assets/vendors/css/charts/apexcharts.css')}}">
 <link rel="stylesheet" type="text/css" href="{{asset('app-assets/vendors/css/extensions/sweetalert2.min.css')}}">
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
 @endpush
 
 @push('page_vendor_js')

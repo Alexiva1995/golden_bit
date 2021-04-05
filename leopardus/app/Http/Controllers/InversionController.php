@@ -41,11 +41,11 @@ class InversionController extends Controller
             'inversion' => ['required', 'numeric', 'min:100'],
             // 'inversion' => ['required'],
             'name' => ['required'],
-            'tipo_pago' => ['required']
+            // 'tipo_pago' => ['required']
         ]);
         try {
             if ($validate) {
-                if ($request->tipo_pago == 'btc') {
+                // if ($request->tipo_pago == 'btc') {
                     $inversion = (double) $request->inversion;
                     $porcentage = ($inversion * 0.06);
                     $total = ($inversion + $porcentage);
@@ -68,10 +68,10 @@ class InversionController extends Controller
         
                     $ruta = CoinPayment::generatelink($transacion);
                     return redirect($ruta);
-                }else{
-                    $msj = $this->procesarInversionWallet($request);
-                    return redirect()->back()->with('msj', $msj);
-                }
+                // }else{
+                //     $msj = $this->procesarInversionWallet($request);
+                //     return redirect()->back()->with('msj', $msj);
+                // }
             }
         } catch (\Throwable $th) {
             \Log::error('Error Proceso Pago '.$th);
@@ -80,23 +80,25 @@ class InversionController extends Controller
     }
 
     /**
-     * Permite comprar un paquete por medio de el dinero de la wallet
+     * Permite procesar las compras con las ganancia de la inversion
      *
-     * @param object $request
+     * @param float $inversion - total invertido
+     * @param float $totalPagar - valor total a pagar
+     * @param integer $paquete
      * @return string
      */
-    function procesarInversionWallet(object $request): string
+    function procesarInversionWallet($inversion, $totalPagar, int $paquete): string
     {
         try {
             $iduser = Auth::user()->ID;
             $msj = 'La inversion es mayor al monto disponible';
-            $inversion = (double) $request->inversion;
+            $inversion = (double) $inversion;
             $inversionPagar = DB::table('log_rentabilidad')->where([
                 ['iduser', '=', $iduser],
-                ['ganado', '>=', $inversion]
+                ['ganado', '>=', $totalPagar]
             ])->first();
             if ($inversionPagar != null) {
-                $total = ($inversionPagar->retirado + $inversion);
+                $total = ($inversionPagar->retirado + $totalPagar);
                 if ($total >= $inversionPagar->limite) {
                     $msj = 'El valor total retirado supera el monto limite';
                 }else{
@@ -105,17 +107,22 @@ class InversionController extends Controller
                         'retirado' => $total,
                         'balance' => $balance
                     ];
-                    $idOrden = $this->saveOrden($inversion, 0);
+                    $idOrden = $this->saveOrden($inversion, $paquete);
                     $fecha_inicio = Carbon::now();
                     DB::table('orden_inversiones')->where('id', '=', $idOrden)->update([
                         'fecha_inicio' => $fecha_inicio,
-                        'idtrasancion' => 'Wallet-'.$fecha_inicio->format('YmdHis'),
+                        'idtrasancion' => 'Wallet-'.$fecha_inicio->format('Ymd-His'),
                         'fecha_fin' => $fecha_inicio->copy()->addYear(),
                         'status' => 1
                     ]);
-                    $this->comisionController->checkExictRentabilidad($iduser, $idOrden);
+                    if ($paquete != 100) {
+                        $this->comisionController->checkExictRentabilidad($iduser, $idOrden);
+                    }
 
                     $concepto = 'Compra de un paquete de inversion por un monto de '.$inversion;
+                    if ($paquete == 100) {
+                        $concepto = 'Actualizar el paquete de membresia';
+                    }
 
                     $dataPay = [
                         'iduser' => Auth::user()->ID,
@@ -301,29 +308,42 @@ class InversionController extends Controller
      *
      * @return void
      */
-    public function pagoGold()
+    public function pagoGold(Request $request)
     {
+        $validate = $request->validate([
+            'tipo_pago' => 'required'
+        ]);
         try{      
-            $inversion = $this->getValorPaqueteGold(Auth::user()->ID);
+            $iduser = Auth::user()->ID;
+            $inversion = $this->getValorPaqueteGold($iduser);
             $porcentage = ($inversion * 0.06);
             $total = ($inversion + $porcentage);
-            $transacion = [
-                'amountTotal' => $total,
-                'note' => 'Paquete Gold',
-                'idorden' => $this->saveOrden($inversion, 100),
-                'tipo' => 'Paquete',
-                'buyer_email' => Auth::user()->user_email,
-                'redirect_url' => route('tienda-index')
-            ];
-            $transacion['items'][] = [
-                'itemDescription' => 'Paquete gold',
-                'itemPrice' => $inversion, // USD
-                'itemQty' => (INT) 1,
-                'itemSubtotalAmount' => $inversion // USD
-            ];
-
-            $ruta = CoinPayment::generatelink($transacion);
-            return redirect($ruta);
+            if ($request->tipo_pago == 'btc') {
+                $transacion = [
+                    'amountTotal' => $total,
+                    'note' => 'Paquete Gold',
+                    'idorden' => $this->saveOrden($inversion, 100),
+                    'tipo' => 'Paquete',
+                    'buyer_email' => Auth::user()->user_email,
+                    'redirect_url' => route('tienda-index')
+                ];
+                $transacion['items'][] = [
+                    'itemDescription' => 'Paquete gold',
+                    'itemPrice' => $inversion, // USD
+                    'itemQty' => (INT) 1,
+                    'itemSubtotalAmount' => $inversion // USD
+                ];
+    
+                $ruta = CoinPayment::generatelink($transacion);
+                return redirect($ruta);
+            } else {
+                $msj = $this->procesarInversionWallet($inversion, $total, 100);
+                $this->activacionController->activarPaqueteGold($iduser);
+                return redirect()->back()->with('msj', $msj);
+            }
+            
+            
+            
             
         } catch (\Throwable $th) {
             return redirect()->back()->with('msj', 'Ah Ocurrido un error, por favor contacte con el administrador');
