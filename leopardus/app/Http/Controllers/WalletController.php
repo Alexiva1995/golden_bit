@@ -70,10 +70,42 @@ class WalletController extends Controller
 	 */
 	public function indexPoints(){
 	   
-		$wallets = DB::table('wallet_point')
+		$walletstmp = DB::table('wallet_point')
 				->where('iduser', Auth::user()->ID)
 				->selectRaw('SUM(point_left) as izq, SUM(point_right) as der, status')
-				->groupBy('status')->get();
+				->groupBy('status')->orderBy('status', 'asc')->get();
+
+		$wallets = [];
+		$data = [
+			'status' => 0,
+			'der' => 0,
+			'izq' => 0
+		];
+		if (!empty($walletstmp)) {
+			if (!empty($walletstmp[0])) {
+				$data['status'] = $walletstmp[0]->status;
+				$data['der'] = $walletstmp[0]->der;
+				$data['izq'] = $walletstmp[0]->izq;
+				$wallets[] = $data;
+			}else{
+				$wallets[] = $data;
+			}
+
+			if (!empty($walletstmp[1])) {
+				$data['status'] = $walletstmp[1]->status;
+				$data['der'] = $walletstmp[1]->der;
+				$data['izq'] = $walletstmp[1]->izq;
+				$wallets[] = $data;
+			}else{
+				$data['status'] = 1;
+				$wallets[] = $data;
+			}
+		}else{
+			$wallets[] = $data;
+			$data['status'] = 1;
+			$wallets[] = $data;
+		}
+		
 		
 	   	return view('wallet.indexwalletpuntos')->with(compact('wallets'));
 	}
