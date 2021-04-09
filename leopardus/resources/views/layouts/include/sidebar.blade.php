@@ -73,6 +73,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a href="{{route('admin.userrecords', ['delete'])}}" class="nav-link text-white">
+                            <i class="feather icon-circle"></i>
+                            <span class="title">Eliminar Usuarios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a href="{{route('autenticacion.new-register').'?referred_id='.Auth::user()->ID}}"
                             class="nav-link" style="color: #FFFFFF;">
                             <i class="feather icon-circle"></i>

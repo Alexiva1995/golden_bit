@@ -361,7 +361,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'licencia', 'guest']
 
     // Modificacion del usuario por parte del admin
 
-    Route::get('/userrecords', 'HomeController@user_records')->name('admin.userrecords');
+    Route::get('/userrecords/{tipo?}', 'HomeController@user_records')->name('admin.userrecords');
 
     Route::get('/change/{iduser}/user/{paquete}/package', 'HomeController@changePaquete')->name('admin.change.paquete');
 

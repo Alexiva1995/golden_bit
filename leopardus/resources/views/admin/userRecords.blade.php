@@ -23,6 +23,11 @@
 							<th class="text-center">
 								Correo
 							</th>
+							@if ($tipo == 'delete')
+							<th class="text-center">
+								Patrocinador
+							</th>
+							@endif
 							<th class="text-center">
 								Estatus
 							</th>
@@ -46,10 +51,17 @@
 							<td class="text-center">
 								{{ $usuario['user_email'] }}
 							</td>
+							@if ($tipo == 'delete')
+							<td class="text-center">
+								{{ $usuario['patrocinador'] }}
+							</td>
+							@endif
 							<td class="text-center">
 
 								@if ($usuario['status'] == 1)
 								Activo
+								@elseif($usuario['status'] == 2)
+								Eliminado
 								@else
 								Inactivo
 								@endif
@@ -59,18 +71,20 @@
 								{{ $usuario['paquete'] }}
 							</td>
 							<td class="text-center">
-								<a class="btn btn-info" href="{{route('admin.change.paquete', [$usuario['ID'], $usuario['cambiar']])}}">
-									Cambiar a {{($usuario['cambiar'] == 0)? 'Standar' : 'Gold'}}</a>
-
 								{{-- <a class="btn btn-info" href="{{ route('admin.useredit', $usuario['ID']) }}">
-									<i class="fa fa-edit"></i></a>
+									<i class="fa fa-edit"></i></a> --}}
 
-								@if($usuario['ID'] != 1)
-								<button class="btn btn-danger" value="{{$usuario['ID']}}"
-									onclick="eliminarProducto(this.value)">
-									<i class="fa fa-trash"></i>
-								</button>
-								@endif --}}
+								@if ($tipo == 'delete')
+									@if($usuario['ID'] != 1 )
+									<button class="btn btn-danger" value="{{$usuario['ID']}}"
+										onclick="eliminarProducto(this.value)">
+										<i class="fa fa-trash"></i>
+									</button>
+									@endif
+								@else
+									<a class="btn btn-info" href="{{route('admin.change.paquete', [$usuario['ID'], $usuario['cambiar']])}}">
+										<i class="feather icon-refresh-cw"></i> -> {{($usuario['cambiar'] == 0)? 'Standar' : 'Gold'}}</a>
+								@endif
 							</td>
 						</tr>
 						@endforeach
@@ -86,9 +100,9 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">Borrar usuario</h4>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
 						aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Borrar usuario</h4>
 			</div>
 			<div class="modal-body">
 				<form action="{{ route('admin.userdelete') }}" method="post">
@@ -98,7 +112,7 @@
 						<label for="">Ingrese la clave del Administrador para poder borrar</label>
 						<input type="password" class="form-control" name="clave">
 					</div>
-					<div class="form-group">
+					<div class="form-group text-center">
 						<button type="submit" class="btn btn-danger">Borrar</button>
 					</div>
 				</form>

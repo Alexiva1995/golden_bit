@@ -157,7 +157,7 @@ class HomeController extends Controller
         }
     }
 
-    public function user_records(){
+    public function user_records($tipo = ''){
          view()->share('title', 'Listado de Usuarios');
 
             // DO MENU
@@ -173,6 +173,7 @@ class HomeController extends Controller
 
         foreach ($usuarios as $llave) {
             $paquete = json_decode($llave->paquete);
+            $patrocinador = User::find($llave->referred_id);
         
             array_push($datos, [
                 'ID' => $llave->ID,
@@ -180,12 +181,13 @@ class HomeController extends Controller
                 'user_email' => $llave->user_email,
                 'rol_id' => $llave->rol_id,
                 'status' => $llave->status,
+                'patrocinador' => ($patrocinador != null) ? $patrocinador->display_name : 'No Disponible',
                 'paquete' => $paquete->nombre,
                 'cambiar' => ($paquete->code == 1) ? 0 : 1
             ]);
         }
 
-        return view('admin.userRecords')->with(compact('datos'));
+        return view('admin.userRecords')->with(compact('datos', 'tipo'));
     }
 
     /**
@@ -272,9 +274,10 @@ class HomeController extends Controller
                     }
                 }
                 $nombreuser = $usuarioBorrar->display_name;
-                DB::table('user_campo')->where('ID', $usuarioBorrar->ID)->delete();
-                $usuarioBorrar->delete();
-                return redirect('mioficina/admin/userrecords')->with('msj', 'El usuario '.$nombreuser.' ha sido eliminado corretamente');
+                // DB::table('user_campo')->where('ID', $usuarioBorrar->ID)->delete();
+                $usuarioBorrar->status = 2;
+                $usuarioBorrar->save();
+                return redirect()->back()->with('msj', 'El usuario '.$nombreuser.' ha sido eliminado corretamente');
             } else {
                 return redirect('mioficina/admin/userrecords')->with('msj2', 'La clave del administrado es incorrecta');
             }
