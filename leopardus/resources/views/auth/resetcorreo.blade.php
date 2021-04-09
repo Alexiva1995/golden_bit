@@ -28,11 +28,11 @@
     <div class="col-xl-8 col-11 d-flex justify-content-center">
         <div class="card bg-authentication rounded-0 mb-0">
             <div class="row m-0">
-                <div class="col-lg-6 d-lg-block d-none text-center align-self-center px-1 py-0">
+                {{-- <div class="col-lg-6 d-lg-block d-none text-center align-self-center px-1 py-0">
                     <img src="{{asset('assets/imgLanding/logo2.png')}}" alt="branding logo" width="300">
-                    {{-- <img src="{{asset('app-assets/images/pages/login.png')}}" alt="branding logo"> --}}
-                </div>
-                <div class="col-lg-6 col-12 p-0">
+                    <img src="{{asset('app-assets/images/pages/login.png')}}" alt="branding logo">
+                </div> --}}
+                <div class="col-12 p-0">
                     <div class="card rounded-0 mb-0 px-2">
                         <div class="card-header pb-1">
                             <div class="card-title inicio">
@@ -55,7 +55,7 @@
                                     <div class="form-label-group">
                                         <label for="">Nueva Clave</label>
                                         <input class="form-control" type="password" autocomplete="off"
-                                            placeholder="Nueva clave" name="password" required>
+                                            placeholder="Nueva clave" name="password" required autofocus>
                                     </div>
                                     <div class="form-label-group">
                                         <label for="">Confirmar Clave</label>
@@ -64,7 +64,7 @@
                                     </div>
 
                                     <div class="float-md-right d-block mb-1 col-12">
-                                        <button type="submit" class="btn btn-primary btn-block px-75">
+                                        <button type="submit" class="btn" style="display: block; background-color: #C8AD77; color: white; font-weight: bold; width: 100%;">
                                             Actualizar
                                         </button>
                                     </div>

@@ -228,6 +228,8 @@ class RegisterController extends Controller
             Auth::guard()->login($user);
             return redirect()->action('HomeController@index')->with('msj', 'Se Registrado Exitosamente');
         } catch (\Throwable $th) {
+            \Log::error('Registrar -> '.$th);
+            // dd($th);
             return redirect()->back()->withInput()->with('msj2', 'El Registro no fue valido, hubo un error en el proceso de registro, contacte con el adminitrador');
         }
 

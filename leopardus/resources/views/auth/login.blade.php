@@ -57,11 +57,11 @@
                                                     </div>
                                                 </fieldset>
                                             </div>
-                                            {{-- <div class="text-right">
+                                            <div class="text-right">
                                                 <a class="card-link" onclick="toggle()" href="javascript:;" style="font-size: 12px; color: #00184E; font-weight: bold;">
                                                     ¿Olvidaste tu Contraseña?
                                                 </a>
-                                            </div> --}}
+                                            </div>
                                         </div><br>
 
                                         <button type="submit" class="btn" style="display: block; background-color: #C8AD77; color: white; font-weight: bold; width: 100%;">INGRESAR</button>
