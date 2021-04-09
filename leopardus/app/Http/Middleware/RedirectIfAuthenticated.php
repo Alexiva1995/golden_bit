@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-
+use PhpParser\Node\Stmt\Return_;
 
 class RedirectIfAuthenticated
 {
@@ -22,6 +22,11 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
+
+            if (Auth::user()->status == 2) {
+                Auth::logout();
+                return redirect()->route('login')->with('msj', 'Usuario Eliminado, por favor crear uno nuevo');
+            }
 
             $inversion = OrdenInversion::where([
                 ['status', '=', 1],

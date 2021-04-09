@@ -139,45 +139,49 @@ class ComisionesController extends Controller
     public function saveComision(int $iduser, int $idcompra, float $debito, int $idreferido, int $nivel_referido, string $concepto, string $tipo_bonus)
     {
         if ($iduser != 1) {
-            $checkComision = Commission::where([
-                ['user_id', '=', $iduser],
-                ['compra_id', '=', $idcompra]
-            ])->first();
-    
-            if ($checkComision == null) {
-                $user = User::find($iduser);
-                $referido = User::find($idreferido);
-                Commission::create([
-                    'user_id' => $iduser,
-                    'compra_id' => $idcompra,
-                    'date' => Carbon::now()->format('Y-m-d'),
-                    'total' => $debito,
-                    'referred_email' => $referido->user_email,
-                    'referred_level' => $nivel_referido,
-                    'status' => 0,
-                    'concepto' => $concepto,
-                    'tipo_comision' => $tipo_bonus
-                ]);
-    
-                $user->wallet_amount = ($user->wallet_amount + $debito);
-    
-                $dataWallet = [
-                    'iduser' => $iduser,
-                    'usuario' => $user->display_name,
-                    'correo' => $referido->user_email,
-                    'descripcion' => $concepto,
-                    'debito' => $debito,
-                    'credito' => 0,
-                    'balance' => $user->wallet_amount,
-                    'descuento' => 0,
-                    'tipotransacion' => 2,
-                    'status' => 0
-                ];
-    
-                $this->walletController->saveWallet($dataWallet);
-    
-                $user->save();
-            }
+           $user = User::find($iduser);
+
+           if ($user->status == 1) {
+                $checkComision = Commission::where([
+                    ['user_id', '=', $iduser],
+                    ['compra_id', '=', $idcompra]
+                ])->first();
+        
+                if ($checkComision == null) {
+                    $user = User::find($iduser);
+                    $referido = User::find($idreferido);
+                    Commission::create([
+                        'user_id' => $iduser,
+                        'compra_id' => $idcompra,
+                        'date' => Carbon::now()->format('Y-m-d'),
+                        'total' => $debito,
+                        'referred_email' => $referido->user_email,
+                        'referred_level' => $nivel_referido,
+                        'status' => 0,
+                        'concepto' => $concepto,
+                        'tipo_comision' => $tipo_bonus
+                    ]);
+        
+                    $user->wallet_amount = ($user->wallet_amount + $debito);
+        
+                    $dataWallet = [
+                        'iduser' => $iduser,
+                        'usuario' => $user->display_name,
+                        'correo' => $referido->user_email,
+                        'descripcion' => $concepto,
+                        'debito' => $debito,
+                        'credito' => 0,
+                        'balance' => $user->wallet_amount,
+                        'descuento' => 0,
+                        'tipotransacion' => 2,
+                        'status' => 0
+                    ];
+        
+                    $this->walletController->saveWallet($dataWallet);
+        
+                    $user->save();
+                }
+           }
         }
     }
 
