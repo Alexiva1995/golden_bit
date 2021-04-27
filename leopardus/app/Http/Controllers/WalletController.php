@@ -70,44 +70,23 @@ class WalletController extends Controller
 	 */
 	public function indexPoints(){
 	   
-		$walletstmp = DB::table('wallet_point')
-				->where('iduser', Auth::user()->ID)
-				->selectRaw('SUM(point_left) as izq, SUM(point_right) as der, status')
-				->groupBy('status')->orderBy('status', 'asc')->get();
+		$walletsPendiente = DB::table('wallet_point')
+				->where([['iduser', '=', Auth::user()->ID], ['status', '=', 0]])
+				->selectRaw('SUM(point_left) as izq, SUM(point_right) as der')
+				->first();
 
-		$wallets = [];
-		$data = [
-			'status' => 0,
-			'der' => 0,
-			'izq' => 0
-		];
-		if (!empty($walletstmp)) {
-			if (!empty($walletstmp[0])) {
-				$data['status'] = $walletstmp[0]->status;
-				$data['der'] = $walletstmp[0]->der;
-				$data['izq'] = $walletstmp[0]->izq;
-				$wallets[] = $data;
-			}else{
-				$wallets[] = $data;
-			}
+		$walletsPagado = DB::table('wallet_point')
+				->where([['iduser', '=', Auth::user()->ID], ['status', '=', 1]])
+				->selectRaw('SUM(point_left + point_right) as total')
+				->first();
 
-			if (!empty($walletstmp[1])) {
-				$data['status'] = $walletstmp[1]->status;
-				$data['der'] = $walletstmp[1]->der;
-				$data['izq'] = $walletstmp[1]->izq;
-				$wallets[] = $data;
-			}else{
-				$data['status'] = 1;
-				$wallets[] = $data;
-			}
-		}else{
-			$wallets[] = $data;
-			$data['status'] = 1;
-			$wallets[] = $data;
-		}
-		
-		
-	   	return view('wallet.indexwalletpuntos')->with(compact('wallets'));
+		$wallet = collect([
+			'total' => (empty($walletsPagado->total)) ? 0 : $walletsPagado->total,
+			'izq' => (empty($walletsPendiente->izq)) ? 0 : $walletsPendiente->izq,
+			'der' => (empty($walletsPendiente->der)) ? 0 : $walletsPendiente->der
+ 		]);
+
+	   	return view('wallet.indexwalletpuntos')->with(compact('wallet'));
 	}
 	
 	/**

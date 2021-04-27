@@ -5,6 +5,18 @@
 {{-- option datatable --}}
 @include('dashboard.componentView.optionDatatable')
 
+@push('custom_js')
+<script>
+	$(document).ready(function () {
+		$('#mytable2').DataTable({
+			dom: 'flBrtip',
+			responsive: true,
+            order: [0, 'desc']
+		});
+	});
+</script>
+@endpush
+
 {{-- alertas --}}
 @include('dashboard.componentView.alert')
 
@@ -16,7 +28,7 @@
         </a>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="mytable" class="table zero-configuration">
+                <table id="mytable2" class="table zero-configuration">
                     <thead>
                         <tr class="text-center">
                             <th>ID</th>
