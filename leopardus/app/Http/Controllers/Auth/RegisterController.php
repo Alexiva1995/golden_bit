@@ -19,7 +19,9 @@ use PragmaRX\Google2FA\Google2FA;
 use App\User; use App\Settings; 
 use Carbon\Carbon;
 
-use App\Formulario; use App\OpcionesSelect;
+use App\Formulario;
+use App\Http\Controllers\InversionController;
+use App\OpcionesSelect;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -190,6 +192,12 @@ class RegisterController extends Controller
                 'status' => '0',
                 'paquete' => json_encode($paquete),
             ]);
+            
+            if (!empty($data['inversion'])) {
+                $this->agregarInversion($data['inversion'], $user->ID);
+            }
+
+
             $this->insertarCampoUser($user->ID, $data);
 
             // inserta en usermeta
@@ -335,7 +343,7 @@ class RegisterController extends Controller
 
         }
 
-        $patrocinadores = [];
+        $patrocinadores = User::where('ID', '!=', 1)->orderBy('id')->get();
         if (!empty(Auth::user()->ID)){
             return view('auth.register')->with(compact('campos', 'valoresSelect', 'settings', 'patrocinadores'));
         }else{
@@ -383,6 +391,38 @@ class RegisterController extends Controller
 
         ]);
 
+    }
+
+    /**
+     * Permite agregar y procesar una inversion a un usuario 
+     *
+     * @param float $inversion
+     * @param integer $iduser
+     * @return void
+     */
+    public function agregarInversion($inversion, $iduser)
+    {
+        $inversionController = new InversionController();
+        
+        $idOrden = $inversionController->saveOrden($inversion, 0);
+
+        $txn_id = base64_encode('Admin-'.Carbon::now()->format('Ymd-His'));
+
+        DB::table('coinpayment_transactions')->insert([
+            'txn_id' => $txn_id,
+            'address' => 'Manual',
+            'status' => 100,
+            'idorden' => $idOrden,
+            'created_at' => Carbon::now(), 
+            'updated_at' => Carbon::now()
+        ]);
+
+        DB::table('orden_inversiones')->where('id', $idOrden)->update([
+            'iduser' => $iduser,
+            'idtrasancion' => $txn_id
+        ]);
+        
+        $inversionController->ActivarManualesCompras();
     }
 
     /**

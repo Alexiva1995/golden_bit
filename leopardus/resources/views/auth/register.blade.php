@@ -119,25 +119,30 @@ $referred = DB::table($settings->prefijo_wp.'users')
                         style="background-color:f7f7f7;" oncopy="return false" onpaste="return false" />
                 </div>
                 <input type="hidden" name="ladomatrix" value="{{request()->lado}}">
-                @if (request()->referred_id == null)
-                <div class="col-xs-12 form-group">
-                    <div class="alert alert-info">
+            @if (Auth::user()->ID == 1)
+                <div class="col-12 col-md-6 form-group">
+                    {{-- <div class="alert alert-info">
                         <button class="close" data-close="alert"></button>
                         <span>
                             If you don't know what your Sponsor's ID is, please register the first User
                         </span>
-                    </div>
-                    <label class="control-label " style="text-align: center;">Sponsor ID</label>
+                    </div> --}}
+                    {{-- <label class="control-label " style="text-align: center;">Patrocinador ID</label> --}}
                     <select name="referred_id" style="background-color:f7f7f7;"
                         class="form-control form-control-solid placeholder-no-fix form-group" required>
-                        <option value="" disabled selected>Select a Sponsor User</option>
+                        <option value="" disabled selected>Seleciones un Patrocinador</option>
                         @foreach ($patrocinadores as $user)
-                        <option value="{{$user->ID}}">{{$user->display_name}}</option>
+                        <option value="{{$user->ID}}">{{$user->display_name}} - {{$user->ID}}</option>
                         @endforeach
                     </select>
                 </div>
-                @else
-                <input type="hidden" name="referred_id" value="{{ request()->referred_id }}" />
+                <div class="col-12 col-md-6 form-group">
+                    <input class="form-control form-control-solid placeholder-no-fix form-group"
+                     type="number" name="inversion" placeholder="Inversion" required step="any"
+                        style="background-color:f7f7f7;" oncopy="return false" onpaste="return false" />
+                </div>
+                {{-- @else
+                <input type="hidden" name="referred_id" value="{{ request()->referred_id }}" /> --}}
                 @endif
                 @if (empty(request()->tipouser))
                 <input type="hidden" name="tipouser" value="Normal" />
