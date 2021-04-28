@@ -25,6 +25,11 @@
 
 <body class="vertical-layout vertical-menu-modern 2-columns  navbar-floating footer-static  " data-open="click"
     data-menu="vertical-menu-modern" data-col="2-columns">
+    <div id="video_pattern">
+		<video autoplay loop id="video_background" preload="auto">
+			<source src="{{asset('assets/black-smoke-on-white-background.mp4')}}" type="video/mp4" />
+		</video>
+	</div>
     {{-- header  --}}
     @include('layouts.include.header')
 

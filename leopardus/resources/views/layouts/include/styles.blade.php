@@ -65,6 +65,28 @@
 
 <style>
 
+	#video_background {
+		position: absolute;
+		bottom: 0px;
+		right: 0px;
+		min-width: 100%;
+		min-height: 100%;
+		width: auto;
+		height: auto;
+		z-index: -1000;
+		overflow: hidden;
+	}
+	#video_pattern {
+		background:#fff;
+		position: fixed;
+		opacity: 0.8;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+	}
+
     #diseng {
 
         border-radius: 50%;

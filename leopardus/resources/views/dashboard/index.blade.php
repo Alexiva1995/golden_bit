@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('content')
-<div class="contai2">
+<div class="contai2" style="position:relative">
 	{{-- alertas --}}
 	@include('dashboard.componentView.alert')
 	<div class="row">
