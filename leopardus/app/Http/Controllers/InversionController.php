@@ -14,8 +14,7 @@ use CoinPayment;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\ComisionesController;
 use App\Http\Controllers\ActivacionController;
-
-use function GuzzleHttp\json_decode;
+use App\Http\Controllers\WalletController;
 
 class InversionController extends Controller
 {
@@ -75,7 +74,7 @@ class InversionController extends Controller
             }
         } catch (\Throwable $th) {
             \Log::error('Error Proceso Pago '.$th);
-            return redirect()->back()->with('msj', 'Ah Ocurrido un error, por favor contacte con el administrador');
+            return redirect()->back()->with('msj', 'Ha ocurrido un error, por favor contacte con el administrador');
         }
     }
 
@@ -186,6 +185,7 @@ class InversionController extends Controller
             if (!empty($user)) {
                 $inversion->correo = $user->user_email;
                 $inversion->usuario = $user->display_name;
+                $inversion->wallet = $user->wallet_amount;
             }else{
                 $inversion->correo = 'Usuario Eliminado o no disponible';
                 $inversion->usuario = 'Usuario Eliminado o no disponible';
@@ -346,7 +346,80 @@ class InversionController extends Controller
             
             
         } catch (\Throwable $th) {
-            return redirect()->back()->with('msj', 'Ah Ocurrido un error, por favor contacte con el administrador');
+            return redirect()->back()->with('msj', 'Ha ocurrido un error, por favor contacte con el administrador');
         }
+    }
+
+    /**
+     * Permite hacer una reinversion 
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function reinversion(Request $request)
+    {
+        $validate = $request->validate([
+            'reinversion' => ['required', 'numeric']
+        ]);
+
+        try{
+            if ($validate) {
+                // Rentabilidad
+                $rentabilidad = DB::table('log_rentabilidad')->where('id', $request->idinversion3)->first();
+                // User
+                $user = User::find($rentabilidad->iduser);
+                $user->wallet_amount = ($user->wallet_amount - $request->total);
+                // Orden
+                $orden = OrdenInversion::find($rentabilidad->idcompra);
+                $orden->invertido = ($orden->invertido + $request->reinversion);
+                $orden->fecha_inicio = Carbon::now();
+                $orden->fecha_fin = Carbon::now()->addYear();
+                // Recalculo de la nueva informacion de la inversio 
+                $limite = ($orden->invertido * 2);
+                $progreso = (($rentabilidad->ganado / $limite) * 100);
+                $updateRentabilidad = [
+                    'limite' => $limite,
+                    'precio' => $orden->invertido,
+                    'progreso' => $progreso,
+                ];
+                // registrar el movimiento del saldo usado
+                $concepto = 'Reinversion por un monto de '.$request->reinversion;
+                $dataWallet = [
+                    'iduser' => $user->ID,
+                    'usuario' => $user->display_name,
+                    'descripcion' => $concepto,
+                    'descuento' => $request->mont_fee,
+                    'debito' => 0,
+                    'credito' => $request->total,
+                    'balance' => $user->wallet_amount,
+                    'tipotransacion' => 3,
+                    'status' => 0,
+                    'correo' => $user->user_email,
+                ];
+                $this->saveWallet($dataWallet);
+
+                // Actualizar Informacion
+                DB::table('log_rentabilidad')->where('id', $request->idinversion3)->update($updateRentabilidad);
+                $orden->save();
+                $user->save();
+
+                return redirect()->back()->with('msj', 'Reinversion realizada con exito');
+            }
+        } catch (\Throwable $th) {
+            dd($th);
+            return redirect()->back()->with('msj', 'Ha ocurrido un error, por favor contacte con el administrador');
+        }
+    }
+
+    /**
+     * Permite guardar en la billetera
+     *
+     * @param array $data
+     * @return void
+     */
+    public function saveWallet(array $data)
+    {
+        $funciones = new WalletController;
+        $funciones->saveWallet($data);
     }
 }

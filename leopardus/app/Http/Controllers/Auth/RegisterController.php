@@ -89,7 +89,6 @@ class RegisterController extends Controller
      */
     public function creater(Request $data)
     {
-        try {
             // Veririca si un usuario solo se guardo en la tabla principal y lo borra para el registro
             $verificarUser = User::where('user_email', $data['user_email'])->get()->toArray();
             if (!empty($verificarUser)) {
@@ -116,6 +115,7 @@ class RegisterController extends Controller
                 'password' => 'required|string|min:6|confirmed',
                 'terms' => 'required'
             ]);
+        try {
             // Obtenemos las configuraciones por defecto
             $settings = Settings::first();
             // $settingEstructura = SettingsEstructura::find(1);
