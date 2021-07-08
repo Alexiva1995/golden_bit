@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ComisionesController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 
 class LiquidationController extends Controller
@@ -189,7 +190,7 @@ class LiquidationController extends Controller
         ]);
         if ($validate) {
             foreach ($request->listuser as $user) {
-                $this->generanLiquidacion($user, []);
+                $this->generanLiquidacion($user, [], '');
             }
             return redirect()->route('liquidacion')->with('msj', 'Liquidaciones Procesadas, salvo las que estan por debajo de 50$');
         }
@@ -462,6 +463,17 @@ class LiquidationController extends Controller
                     $liquidacion->hash = $data->hash;
                     $this->bonoRetiro($liquidacion->iduser, $liquidacion->total);
                     $liquidacion->save();
+                    $data = [
+                        'monto' => $liquidacion->total,
+                        'billetera' => $liquidacion->wallet_used,
+                        'fecha' => Carbon::now()->format('d-m-Y'),
+                        'hora' => Carbon::now()->format('H:i:s')
+                    ];
+                    $user = User::find($liquidacion->iduser);
+                    Mail::send('emails.retiro',  ['data' => $data], function($msj) use ($user){
+                        $msj->subject('Retiro Aprobado');
+                        $msj->to($user->user_email);
+                    });
             //     }else{
             //         $estado = "Hubo un error al momento de procesar el retiro";
             //     }

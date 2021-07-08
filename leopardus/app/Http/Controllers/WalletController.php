@@ -294,7 +294,8 @@ class WalletController extends Controller
 	{
 
 		$validate = $request->validate([
-			'retirar' => ['numeric', 'required']
+			'retirar' => ['numeric', 'required'],
+			'billetera' => ['required']
 		]);
 
 		try {
@@ -320,13 +321,13 @@ class WalletController extends Controller
 						];
 					}
 
-					$wallet = DB::table('user_campo')->where('ID', '=', Auth::user()->ID)->select('paypal')->first();
+					// $wallet = DB::table('user_campo')->where('ID', '=', Auth::user()->ID)->select('paypal')->first();
 
 					$comisiones = new ComisionesController();
 					$dataLiquidation = [
 						'iduser' => Auth::user()->ID,
 						'total' => $request->total,
-						'wallet_used' => $wallet->paypal,
+						'wallet_used' => $request->billetera,
 						'process_date' => Carbon::now(),
 						'status' => 0,
 						'type_liquidation' => 'Inversion',

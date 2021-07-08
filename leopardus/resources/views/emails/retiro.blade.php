@@ -10,16 +10,15 @@
 
 <small>
     <p class="card-text text-justify">
-        Tu retiro de ${{$data['monto']}} ETH se realizó con éxito <br>
+        Tu retiro de ${{$data['monto']}} a la billetera {{$data['billetera']}} se realizó con éxito <br>
         el día {{$data['fecha']}}
         a las {{$data['hora']}}
-        <br> <br>
-        Gracias por pertenecer a la Familia Level UP
+        <br>
     </p>
 </small>
 
 @endsection
-@push('quote')
+{{-- @push('quote')
 De seguro que serás nuestro próximo UPPER, <br>
 asi pues que sigamos
-@endpush
+@endpush --}}

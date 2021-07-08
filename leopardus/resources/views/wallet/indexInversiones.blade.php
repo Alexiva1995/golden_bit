@@ -106,6 +106,10 @@
                 <input type="text" class="form-control" readonly name="total" id="total">
             </div>
             <div class="form-group">
+                <label for="">Billetera</label>
+                <input type="text" class="form-control" name="billetera" required>
+            </div>
+            <div class="form-group text-center">
                 <button class="btn btn-info">Retirar</button>
             </div>
           </form>
@@ -158,7 +162,7 @@
                 <label for="">Total a Descontal del saldo</label>
                 <input type="text" class="form-control" readonly name="total" id="total_descontar">
             </div>
-            <div class="form-group">
+            <div class="form-group text-center">
                 <button class="btn btn-info">Reinvertir</button>
             </div>
           </form>
