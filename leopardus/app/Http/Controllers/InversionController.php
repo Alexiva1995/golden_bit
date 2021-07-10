@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\OrdenInversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 use App\User;
 use Illuminate\Support\Facades\DB;
@@ -402,6 +403,14 @@ class InversionController extends Controller
                 DB::table('log_rentabilidad')->where('id', $request->idinversion3)->update($updateRentabilidad);
                 $orden->save();
                 $user->save();
+
+                if (Auth::user()->ID == 1) {
+                    Mail::send('emails.reinversion', [], function ($msj) use ($user)
+                    {
+                        $msj->subject('Cuenta Fondeada');
+                        $msj->to($user->user_email);
+                    });
+                }
 
                 return redirect()->back()->with('msj', 'Reinversion realizada con exito');
             }
