@@ -178,7 +178,15 @@ class ComisionesController extends Controller
                     ];
         
                     $this->walletController->saveWallet($dataWallet);
-        
+
+                    $orden = OrdenInversion::where([
+                        ['iduser', '=', $user->ID],
+                        ['status', '=', 1],
+                        ['paquete_inversion', '!=', '100']
+                    ])->whereDate('fecha_fin', '>', Carbon::now())->first();
+                    if ($orden != null) {
+                        $this->updateBonoRentabilidad($user->ID, $orden->id, 0, $debito, $concepto);
+                    }
                     $user->save();
                 }
            }
@@ -219,7 +227,7 @@ class ComisionesController extends Controller
                 ])->whereDate('fecha_fin', '>', Carbon::now())->get();
                 foreach ($ordens as $orden) {
                     $ganado = ($orden->invertido * $porcentaje);
-                    $this->updateBonoRentabilidad($user->ID, $orden->id, $porcentaje, $ganado);
+                    $this->updateBonoRentabilidad($user->ID, $orden->id, $porcentaje, $ganado, null);
                 }
             }
         } catch (\Throwable $th) {
@@ -232,11 +240,12 @@ class ComisionesController extends Controller
      *
      * @param integer $iduser
      * @param integer $idcompra
-     * @param double $porcentaje
+     * @param float $porcentaje
      * @param float $ganado
+     * @param string $concepto
      * @return void
      */
-    public function updateBonoRentabilidad($iduser, $idcompra, $porcentaje, $ganado)
+    public function updateBonoRentabilidad(int $iduser, int $idcompra, float $porcentaje, float $ganado, string $concepto = null)
     {
         $rentabilidad = DB::table('log_rentabilidad')->where([
             ['iduser', '=', $iduser],
@@ -263,6 +272,10 @@ class ComisionesController extends Controller
             }else{
                 OrdenInversion::where('id', $idcompra)->update(['fecha_fin' => Carbon::now()->addYear()->format('Y-m-d')]);
             }
+
+            if ($concepto == null) {
+                $concepto = 'Pagos Utilidades ('.$porcentaje.') - Fecha: '.$fecha;
+            }
             
             $dataPay = [
                 'iduser' => $iduser,
@@ -272,7 +285,7 @@ class ComisionesController extends Controller
                 'credito' => 0,
                 'balance' => $tmpganado,
                 'fecha_pago' => $fecha,
-                'concepto' => 'Pagos Utilidades ('.$porcentaje.') - Fecha: '.$fecha,
+                'concepto' => $concepto,
             ];
             $this->savePayRentabilidad($dataPay, $rentabilidad->id, $dataRent);
         }

@@ -153,12 +153,12 @@ class InversionController extends Controller
      * @param string $idpaquete - id del paqueted de inversion
      * @return integer
      */
-    public function saveOrden($inversion, $idpaquete): int
+    public function saveOrden($inversion, $idpaquete, $iduser = null): int
     {
         $data = [
             'invertido' => (DOUBLE) $inversion,
             'concepto' => ($idpaquete == 0) ? 'Inversion de '.number_format($inversion, 2, ',', '.'). ' USD' : 'Paquete Gold',
-            'iduser' => Auth::user()->ID,
+            'iduser' => ($iduser ==  null) ? Auth::user()->ID : $iduser,
             'idtrasancion' => '',
             'status' => 0,
             'paquete_inversion' => $idpaquete

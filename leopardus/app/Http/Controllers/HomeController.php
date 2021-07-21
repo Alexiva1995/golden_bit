@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Formulario;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 use Carbon\Carbon; 
 use App\Settings;
@@ -282,6 +282,19 @@ class HomeController extends Controller
                 return redirect('mioficina/admin/userrecords')->with('msj2', 'La clave del administrado es incorrecta');
             }
             
+        }
+    }
+
+    public function refondearUser(Request $request)
+    {
+        $validate = $request->validate([
+            'userrefondear' => 'required',
+            'inversion' => 'required|numeric'
+        ]);
+        if ($validate) {
+            $registerController = new RegisterController();
+            $registerController->agregarInversion($request->inversion, $request->userrefondear);
+            return redirect()->back()->with('msj', 'Usuario Refondeado con exito');
         }
     }
 

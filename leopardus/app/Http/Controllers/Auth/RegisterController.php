@@ -197,7 +197,6 @@ class RegisterController extends Controller
                 $this->agregarInversion($data['inversion'], $user->ID);
             }
 
-
             $this->insertarCampoUser($user->ID, $data);
 
             // inserta en usermeta
@@ -404,7 +403,7 @@ class RegisterController extends Controller
     {
         $inversionController = new InversionController();
         
-        $idOrden = $inversionController->saveOrden($inversion, 0);
+        $idOrden = $inversionController->saveOrden($inversion, 0, $iduser);
 
         $txn_id = base64_encode('Admin-'.Carbon::now()->format('Ymd-His'));
 

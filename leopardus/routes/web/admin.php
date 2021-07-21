@@ -362,59 +362,27 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'licencia', 'guest']
 
 
     // Modificacion del usuario por parte del admin
-
     Route::get('/userrecords/{tipo?}', 'HomeController@user_records')->name('admin.userrecords');
-
     Route::get('/change/{iduser}/user/{paquete}/package', 'HomeController@changePaquete')->name('admin.change.paquete');
-
     Route::get('/useredit/{id}', 'ActualizarController@user_edit')->name('admin.useredit');
-
     Route::post('/userdelete', 'HomeController@deleteProfile')->name('admin.userdelete');
-
+    Route::post('/userrefondear', 'HomeController@refondearUser')->name('admin.userrefondear');
     Route::get('/userinactive', 'HomeController@userActiveManual')->name('admin.userinactive');
-
     Route::post('/userinactive', 'HomeController@saveActiveManual')->name('admin.userinactive');
-
-
-
     Route::post('/userdeletetodos/{id}', 'AdminController@deleteTodos')->name('admin.userdeletetodos');
-
-
-
-
-
     Route::get('/notifications', 'NotificationController@index')->name('admin.notifications');
-
-    
-
     //Search users por vision de usuario
-
     Route::get('/buscar','AdminController@buscar')->name('admin.buscar');
-
-    
-
     Route::get('/vista','AdminController@vista')->name('admin.vista');
-
     //fin de vision de usuario
-
-    
-
     //Todo tipo de informes
-
      Route::group(['prefix' => 'info'], function(){
-
       // info rango
       Route::get('rangouser', 'RangoController@listRangos')->name('info.list-rango');
       route::get('{iduser}/{idrango}/{estado}/actualizarpremio', 'RangoController@cambiarEstadoDelosrangos')->name('info.rango-actualizar');
-
          //informes de perfil buscar por nombre
-
         Route::get('/perfil', 'ReporteController@perfil')->name('info.perfil');
-
         Route::post('/nombre','ReporteController@nombre')->name('info.nombre');
-
-      
-
       //buscar por ID de usuario
 
         Route::post('/usuario','ReporteController@usuario')->name('info.usuario');

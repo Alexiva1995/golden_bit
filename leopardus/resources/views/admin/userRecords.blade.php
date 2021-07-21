@@ -81,6 +81,11 @@
 										<i class="fa fa-trash"></i>
 									</button>
 									@endif
+								@elseif($tipo == 'refondeo')
+								<button class="btn btn-primary" value="{{$usuario['ID']}}"
+										onclick="refondear(this.value)">
+										Refondear
+									</button>
 								@else
 									<a class="btn btn-info" href="{{route('admin.change.paquete', [$usuario['ID'], $usuario['cambiar']])}}">
 										<i class="feather icon-refresh-cw"></i> -> {{($usuario['cambiar'] == 0)? 'Standar' : 'Gold'}}</a>
@@ -123,10 +128,46 @@
 		</div>
 	</div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModalRefondeo" tabindex="-1" role="dialog" aria-labelledby="myModalRefondeoLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title" id="myModalRefondeoLabel">Refondear Usuario</h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+			</div>
+			<div class="modal-body">
+				<form action="{{ route('admin.userrefondear') }}" method="post">
+					{{ csrf_field() }}
+					<input type="hidden" name="userrefondear" id="userrefondear">
+					<div class="form-group">
+						<label for="">Ingrese la cantidad a refondear</label>
+						<input type="number" class="form-control" name="inversion">
+					</div>
+					<div class="form-group text-center">
+						<button type="submit" class="btn btn-primary">Refondear</button>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <script>
 	function eliminarProducto(idproducto) {
 		$('#userdelete').val(idproducto)
 		$('#myModal').modal('show')
+	}
+
+	function refondear(idproducto) {
+		$('#userrefondear').val(idproducto)
+		$('#myModalRefondeo').modal('show')
 	}
 </script>
 @endsection
