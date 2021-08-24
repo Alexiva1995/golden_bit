@@ -303,6 +303,14 @@ class WalletController extends Controller
 				$user = User::find(Auth::user()->ID);
 				$admin = User::find(1);
 				$inversion = DB::table('log_rentabilidad')->where('id', $request->idinversion)->first();
+				$check = DB::table('liquidaciones')->where([
+					['status', '=', 0],
+					['type_liquidation', '=', 'Inversion'],
+					['iduser', '=', Auth::user()->ID]
+				])->first();
+				if (!empty($check)) {
+					return redirect()->back()->with('msj2', 'Tienes un retiro pendiente, no puedes realizar un nuevo retiro, hasta que el otro retiro haya sido procesado');
+				}
 				if ($inversion->balance > 0) {
 					$concepto = 'Liquidacion de '.$request->retirar.' de la Rentabilidad: '.$request->idinversion;
 					$credito = $request->retirar;
@@ -313,6 +321,9 @@ class WalletController extends Controller
 						$total = ($inversion->retirado + $request->retirar);
 						if ($total >= $inversion->limite) {
 							return redirect()->back()->with('msj2', 'El valor total retirado supera el monto limite');
+						}
+						if ($total >= $request->ganancia) {
+							return redirect()->back()->with('msj2', 'El valor a retirar es mayor al disponible');
 						}
 						$balance = ($inversion->ganado - $total);
 						$dataRent = [
