@@ -280,6 +280,9 @@ class WalletController extends Controller
 		$funciones = new IndexController();
 
 		$inversiones = $funciones->getInversionesUserDashboard(Auth::user()->ID, true);
+		foreach ($inversiones as $inversion) {
+			$inversion->disponible = ($inversion->ganado - $inversion->retirado);
+		}
 
 		return view('wallet.indexInversiones', compact('inversiones')); 
 	}
@@ -300,8 +303,6 @@ class WalletController extends Controller
 
 		try {
 			if ($validate) {
-				$user = User::find(Auth::user()->ID);
-				$admin = User::find(1);
 				$inversion = DB::table('log_rentabilidad')->where('id', $request->idinversion)->first();
 				$check = DB::table('liquidaciones')->where([
 					['status', '=', 0],
@@ -322,7 +323,7 @@ class WalletController extends Controller
 						if ($total >= $inversion->limite) {
 							return redirect()->back()->with('msj2', 'El valor total retirado supera el monto limite');
 						}
-						if ($total >= $request->ganancia) {
+						if ($total > $request->ganacia) {
 							return redirect()->back()->with('msj2', 'El valor a retirar es mayor al disponible');
 						}
 						$balance = ($inversion->ganado - $total);

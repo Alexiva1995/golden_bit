@@ -20,6 +20,7 @@
                             <th>Inversion</th>
                             <th>Ganacia</th>
                             <th>Retirado</th>
+                            <th>Disponible</th>
                             <th>Progreso</th>
                             <th>Estado</th>
                             <th>Acción</th>
@@ -32,6 +33,7 @@
                             <td>$ {{$inversion->precio}}</td>
                             <td>$ {{$inversion->ganado}}</td>
                             <td>$ {{$inversion->retirado}}</td>
+                            <td>$ {{$inversion->disponible}}</td>
                             <td>{{($inversion->progreso * 2)}} %</td>
                             <td>
                                 @if ($inversion->progreso == 100)
@@ -42,7 +44,7 @@
                             </td>
                             <td>
                                 @if ($inversion->limite > $inversion->retirado)
-                                <button class="btn btn-info" onclick="retiro('{{$inversion->id}}', '{{$inversion->balance}}')">
+                                <button class="btn btn-info" onclick="retiro('{{$inversion->id}}', '{{$inversion->disponible}}')">
                                     Retirar
                                 </button>
                                 @endif
